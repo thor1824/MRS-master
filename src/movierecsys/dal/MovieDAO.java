@@ -136,7 +136,7 @@ public class MovieDAO
      *
      * @param movie The movie to delete.
      */
-    private void deleteMovie(Movie movie)
+    public void deleteMovie(Movie movie)
     {
         //TODO Delete movie
     }
@@ -147,7 +147,7 @@ public class MovieDAO
      *
      * @param movie The updated movie.
      */
-    private void updateMovie(Movie movie)
+    public void updateMovie(Movie movie)
     {
         //TODO Update movies
     }
@@ -158,7 +158,7 @@ public class MovieDAO
      * @param id ID of the movie.
      * @return A Movie object.
      */
-    private Movie getMovie(int id)
+    public Movie getMovie(int id)
     {
         //TODO Get one Movie
         return null;
