@@ -35,16 +35,16 @@ public class RatingDAO {
     /**
      * Updates the rating to reflect the given object.
      *
-     * @param rating The updated rating to persist.
+     * @param newRating The updated rating to persist.
      */
-    public void updateRating(Rating rating) throws IOException {
+    public void updateRating(Rating newRating) throws IOException {
         for (Rating oldRating : getAllRatings()) {
-            if (oldRating.getUser() == rating.getUser() && oldRating.getMovie() == rating.getMovie()) {
-                oldRating = rating;
+            if (oldRating.getUser() == newRating.getUser() && oldRating.getMovie() == newRating.getMovie()) {
+                oldRating = newRating;
                 return;
             }
         }
-        createRating(rating);
+        createRating(newRating);
         //To DO tilføj til filen
     }
 

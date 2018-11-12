@@ -34,7 +34,7 @@ public class Rating
     {
         this.movie = movie;
         this.user = user;
-        this.rating = rating;
+        setRating(rating);
     }
 
     /**
@@ -45,7 +45,20 @@ public class Rating
      */
     public void setRating(int rating)
     {
-        this.rating = rating;
+        if(isLegalRating(rating))
+            this.rating = rating;
+        
+    }
+    
+    private boolean isLegalRating(int rating)
+    {
+       if (rating == -5 || rating == - 3 || rating == 1 || rating == 3 || rating == 5)
+           return true;
+       else
+            System.out.println("The rating for" + movie.getTitle() + " by " + user.getName() + " is not permittet");
+            System.out.println("Choose one of the folloing scores:" + " " + SUPER_BAD + " " + BAD + " " + NEUTRAL + " " + GOOD + " " + SUPER_GOOD);
+            return false;
+                   
     }
 
     /**
