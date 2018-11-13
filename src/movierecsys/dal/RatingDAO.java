@@ -6,11 +6,17 @@
 package movierecsys.dal;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
@@ -22,16 +28,24 @@ import movierecsys.be.User;
  */
 public class RatingDAO {
 
-    private static final String SOURCE = "data/ratings.txt";
+    private static final String RATING_SOURCE = "data/ratings.txt";
+    private static final String TEMP_SOURCE = "data/temp.txt";
 
     /**
      * Persists the given rating.
      *
      * @param rating the rating to persist.
      */
-    public void createRating(Rating rating) {
+    public Rating createRating(Rating rating) throws IOException {
 
-        //To DO tilføj til filen
+        Path path = new File(RATING_SOURCE).toPath();
+        int id = -1;
+        try (BufferedWriter bw = Files.newBufferedWriter(path, StandardOpenOption.SYNC, 
+                StandardOpenOption.APPEND, StandardOpenOption.WRITE))
+        {
+            bw.write(rating.getMovie().getId() + "," + rating.getUser().getId() + "," + rating.getRating());
+        }
+        return rating;
     }
 
     /**
@@ -40,14 +54,18 @@ public class RatingDAO {
      * @param newRating The updated rating to persist.
      */
     public void updateRating(Rating newRating) throws IOException {
-        for (Rating oldRating : getAllRatings()) {
-            if (oldRating.getUser() == newRating.getUser() && oldRating.getMovie() == newRating.getMovie()) {
-                oldRating = newRating;
-                return;
+        File tmp = new File(RATING_SOURCE);
+        List<Rating> allRating = getAllRatings();
+        allRating.removeIf((Rating v) -> v.getMovie().getId() == newRating.getMovie().getId());
+        allRating.add(newRating);
+        Collections.sort(allRating, (Rating o1, Rating o2) -> Integer.compare(o1.getMovie().getId(), o2.getMovie().getId()));
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp))) {
+            for (Rating rating : allRating) {
+                bw.write(rating.getMovie().getId() + "," + rating.getUser().getId() + "," + rating.getRating());
+                bw.newLine();
             }
         }
-        createRating(newRating);
-        //To DO tilføj til filen
+        Files.copy(tmp.toPath(), new File(RATING_SOURCE).toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
@@ -56,8 +74,25 @@ public class RatingDAO {
      * @param rating
      */
     public void deleteRating(Rating rating) throws IOException {
-        getAllRatings().remove(rating);
-        //To DO Fjern fra filen
+        File file = new File(RATING_SOURCE);
+        File temp = new File(TEMP_SOURCE);
+
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
+
+        String lineToRemove;
+
+        while ((lineToRemove = reader.readLine()) != null) {
+            if (null != lineToRemove && !lineToRemove.equalsIgnoreCase(rating.toString())) {
+                writer.write(lineToRemove + System.getProperty("line.separator"));
+            }
+        }
+        writer.close();
+        reader.close();
+
+        boolean deleted = file.delete();
+        boolean successful = temp.renameTo(file);
+        System.out.println(successful);
     }
 
     /**
@@ -66,7 +101,7 @@ public class RatingDAO {
      * @return List of all ratings.
      */
     public List<Rating> getAllRatings() throws IOException {
-        File file = new File(SOURCE);
+        File file = new File(RATING_SOURCE);
         List<Rating> allRatings = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -83,7 +118,7 @@ public class RatingDAO {
         return allRatings;
     }
 
-    private Rating createRatingFromString(String strRating) {
+    private Rating createRatingFromString(String strRating) throws IOException {
         UserDAO userDAO = new UserDAO();
         MovieDAO movieD = new MovieDAO();
 

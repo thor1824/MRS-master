@@ -31,7 +31,7 @@ public class MovieDAO
 {
 
     private static final String MOVIE_SOURCE = "data/movie_titles.txt";
-    private static final String TEMP= "E:\\GitHub\\MRS-master\\data\\temp.txt";
+    private static final String TEMP_SOURCE= "data/temp.txt";
     /**
      * Gets a list of all movies in the persistence storage.
      *
@@ -40,7 +40,7 @@ public class MovieDAO
     public List<Movie> getAllMovies() throws IOException
     {
         List<Movie> allMovies = new ArrayList<>();
-        String source = "data/movie_titles.txt";
+        String source = MOVIE_SOURCE;
         File file = new File(source);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file)))
@@ -141,10 +141,10 @@ public class MovieDAO
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException
     {
         File file = new File(MOVIE_SOURCE);
-        File midlertidig = new File(TEMP);
+        File midlertidig = new File(TEMP_SOURCE);
         
         BufferedReader reader = new BufferedReader(new FileReader(file));
-        BufferedWriter wrider = new BufferedWriter(new FileWriter(midlertidig));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(midlertidig));
         
         String lineToRemove;
         
@@ -152,12 +152,12 @@ public class MovieDAO
         {
             if(null!= lineToRemove && !lineToRemove.equalsIgnoreCase(movie.toString()))
             {
-                wrider.write(lineToRemove + System.getProperty("line.separator"));
+                writer.write(lineToRemove + System.getProperty("line.separator"));
                 
             }
             
         }
-        wrider.close();
+        writer.close();
         reader.close();
         
         boolean deleted = file.delete();

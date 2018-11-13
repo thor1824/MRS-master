@@ -61,6 +61,11 @@ public class Rating
                    
     }
 
+    @Override
+    public String toString() {
+        return movie + "," + user + ","+ rating;
+    }
+
     /**
      * Gets the movie being rated.
      *

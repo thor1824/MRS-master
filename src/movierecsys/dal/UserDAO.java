@@ -29,6 +29,7 @@ public class UserDAO
      * får fart i "users" i mappen af MovieRecommendationSystem-master/data
      */
     private static final String USER_SOURCE = "data/users.txt";
+    private static final String TEMP_SOURCE = "data/temp.txt";
 
     /**
      * Gets a list of all known users.
@@ -114,5 +115,27 @@ public class UserDAO
         }
         Files.copy(tmp.toPath(), new File(USER_SOURCE).toPath(), StandardCopyOption.REPLACE_EXISTING);
 
+    }
+    
+    public void deleteRating(User user) throws IOException {
+        File file = new File(USER_SOURCE);
+        File temp = new File(TEMP_SOURCE);
+
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
+
+        String lineToRemove;
+
+        while ((lineToRemove = reader.readLine()) != null) {
+            if (null != lineToRemove && !lineToRemove.equalsIgnoreCase(user.toString())) {
+                writer.write(lineToRemove + System.getProperty("line.separator"));
+            }
+        }
+        writer.close();
+        reader.close();
+
+        boolean deleted = file.delete();
+        boolean successful = temp.renameTo(file);
+        System.out.println(successful);
     }
 }
