@@ -13,7 +13,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -36,6 +35,7 @@ public class MovieDAO
      * Gets a list of all movies in the persistence storage.
      *
      * @return List of movies.
+     * @throws java.io.IOException
      */
     public List<Movie> getAllMovies() throws IOException
     {
@@ -87,6 +87,7 @@ public class MovieDAO
      * @param title The title of the movie
      * @return The object representation of the movie added to the persistence
      * storage.
+     * @throws java.io.IOException
      */
     public Movie createMovie(int releaseYear, String title) throws IOException
     {
@@ -101,6 +102,12 @@ public class MovieDAO
         return new Movie(id, releaseYear, title);
     }
 
+    /**
+     * gets first Available movie ID
+     * 
+     * @return
+     * @throws IOException 
+     */
     private int getNextAvailableMovieID() throws IOException
     {
         Path path = new File(MOVIE_SOURCE).toPath();
@@ -137,6 +144,7 @@ public class MovieDAO
      * Deletes a movie from the persistence storage.
      *
      * @param movie The movie to delete.
+     * @throws java.io.FileNotFoundException
      */
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException
     {

@@ -35,6 +35,8 @@ public class RatingDAO {
      * Persists the given rating.
      *
      * @param rating the rating to persist.
+     * @return 
+     * @throws java.io.IOException
      */
     public Rating createRating(Rating rating) throws IOException {
 
@@ -52,6 +54,7 @@ public class RatingDAO {
      * Updates the rating to reflect the given object.
      *
      * @param newRating The updated rating to persist.
+     * @throws java.io.IOException
      */
     public void updateRating(Rating newRating) throws IOException {
         File tmp = new File(RATING_SOURCE);
@@ -72,6 +75,7 @@ public class RatingDAO {
      * Removes the given rating.
      *
      * @param rating
+     * @throws java.io.IOException
      */
     public void deleteRating(Rating rating) throws IOException {
         File file = new File(RATING_SOURCE);
@@ -99,6 +103,7 @@ public class RatingDAO {
      * Gets all ratings from all users.
      *
      * @return List of all ratings.
+     * @throws java.io.IOException
      */
     public List<Rating> getAllRatings() throws IOException {
         File file = new File(RATING_SOURCE);
@@ -140,6 +145,7 @@ public class RatingDAO {
      *
      * @param user The user
      * @return The list of ratings.
+     * @throws java.io.IOException
      */
     public List<Rating> getRatings(User user) throws IOException {
         List<Rating> ratingsOfUser = new ArrayList<>();
