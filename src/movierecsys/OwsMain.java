@@ -5,13 +5,16 @@
  */
 package movierecsys;
 
+import java.awt.BorderLayout;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import movierecsys.be.User;
 import movierecsys.dal.MovieDAO;
+import movierecsys.dal.UserDAO;
 
 /**
  *
@@ -30,15 +33,12 @@ public final class OwsMain extends Application
     }
 
     /**
-     * @param args the command line arguments
+     * @param args the command line argument
      */
     public static void main(String[] args) throws IOException
     {
-        MovieDAO movie = new MovieDAO();
-        movie.deleteMovie("1,2003,Dinosaur Planet");
-        System.out.println("slut");
+        System.out.println("done");
         System.exit(0);
-        
     }
 
 }
