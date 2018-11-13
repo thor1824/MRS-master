@@ -31,7 +31,7 @@ public class MovieDAO
 {
 
     private static final String MOVIE_SOURCE = "data/movie_titles.txt";
-     
+    private static final String TEMP= "E:\\GitHub\\MRS-master\\data\\temp.txt";
     /**
      * Gets a list of all movies in the persistence storage.
      *
@@ -141,7 +141,7 @@ public class MovieDAO
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException
     {
         File file = new File(MOVIE_SOURCE);
-        File midlertidig = new File("E:\\GitHub\\MRS-master\\data\\temp.txt");
+        File midlertidig = new File(TEMP);
         
         BufferedReader reader = new BufferedReader(new FileReader(file));
         BufferedWriter wrider = new BufferedWriter(new FileWriter(midlertidig));
@@ -174,10 +174,9 @@ public class MovieDAO
      *
      * @param movie The updated movie.
      */
-    public void updateMovie(Movie movie) throws IOException
+    public void updateMovie(Movie movie)
     {
       
-   
     }
 
     /**
@@ -186,15 +185,10 @@ public class MovieDAO
      * @param id ID of the movie.
      * @return A Movie object.
      */
-    public Movie getMovie(int id) throws IOException
+    public Movie getMovie(int id)
     {
-     for (Movie movie : getAllMovies())
-     {
-         if(movie.getId() == id)
-         {
-             return movie;
-         }
-     }
-     return null;
+        //TODO Get one Movie
+        return null;
     }
+
 }

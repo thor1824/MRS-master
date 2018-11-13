@@ -83,7 +83,7 @@ public class RatingDAO {
         return allRatings;
     }
 
-    private Rating createRatingFromString(String strRating) throws IOException {
+    private Rating createRatingFromString(String strRating) {
         UserDAO userDAO = new UserDAO();
         MovieDAO movieD = new MovieDAO();
 
