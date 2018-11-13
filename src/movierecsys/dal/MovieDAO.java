@@ -92,10 +92,10 @@ public class MovieDAO
     {
         Path path = new File(MOVIE_SOURCE).toPath();
         int id = -1;
-        try (BufferedWriter bw = Files.newBufferedWriter(path, StandardOpenOption.SYNC, StandardOpenOption.APPEND, StandardOpenOption.WRITE))
+        try (BufferedWriter bw = Files.newBufferedWriter(path, StandardOpenOption.SYNC, 
+                StandardOpenOption.APPEND, StandardOpenOption.WRITE))
         {
             id = getNextAvailableMovieID();
-            bw.newLine();
             bw.write(id + "," + releaseYear + "," + title);
         }
         return new Movie(id, releaseYear, title);

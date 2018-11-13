@@ -5,9 +5,11 @@
  */
 package movierecsys.dal;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import movierecsys.be.Movie;
@@ -35,16 +37,16 @@ public class RatingDAO {
     /**
      * Updates the rating to reflect the given object.
      *
-     * @param rating The updated rating to persist.
+     * @param newRating The updated rating to persist.
      */
-    public void updateRating(Rating rating) throws IOException {
+    public void updateRating(Rating newRating) throws IOException {
         for (Rating oldRating : getAllRatings()) {
-            if (oldRating.getUser() == rating.getUser() && oldRating.getMovie() == rating.getMovie()) {
-                oldRating = rating;
+            if (oldRating.getUser() == newRating.getUser() && oldRating.getMovie() == newRating.getMovie()) {
+                oldRating = newRating;
                 return;
             }
         }
-        createRating(rating);
+        createRating(newRating);
         //To DO tilføj til filen
     }
 
@@ -65,29 +67,34 @@ public class RatingDAO {
      */
     public List<Rating> getAllRatings() throws IOException {
         File file = new File(SOURCE);
-
-        List<String> lines = Files.readAllLines(file.toPath());
         List<Rating> allRatings = new ArrayList<>();
-        
-        for (String line : lines) {
-            allRatings.add(createRatingFromString(line));
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    Rating mov = createRatingFromString(line);
+                    allRatings.add(mov);
+                } catch (Exception ex) {
+                    //Do nothing
+                }
+            }
         }
         return allRatings;
-
     }
 
     private Rating createRatingFromString(String strRating) {
         UserDAO userDAO = new UserDAO();
         MovieDAO movieD = new MovieDAO();
-        
+
         String[] columms = strRating.split(",");
-        
+
         int userId = Integer.parseInt(columms[0]);
         User user = userDAO.getUser(userId);
-        
+
         int movieId = Integer.parseInt(columms[1]);
         Movie movie = movieD.getMovie(movieId);
-        
+
         int ratingOfMovie = Integer.parseInt(columms[2]);
         Rating rating = new Rating(movie, user, ratingOfMovie);
         return rating;
