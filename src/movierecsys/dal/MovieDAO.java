@@ -138,7 +138,7 @@ public class MovieDAO
      *
      * @param movie The movie to delete.
      */
-    public void deleteMovie(String str) throws FileNotFoundException, IOException
+    public void deleteMovie(Movie movie) throws FileNotFoundException, IOException
     {
         File file = new File(MOVIE_SOURCE);
         File midlertidig = new File(TEMP);
@@ -150,7 +150,7 @@ public class MovieDAO
         
         while((lineToRemove = reader.readLine()) != null)
         {
-            if(null!= lineToRemove && !lineToRemove.equalsIgnoreCase(str))
+            if(null!= lineToRemove && !lineToRemove.equalsIgnoreCase(movie.toString()))
             {
                 wrider.write(lineToRemove + System.getProperty("line.separator"));
                 
