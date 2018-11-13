@@ -8,7 +8,9 @@ package movierecsys.dal;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.MalformedInputException;
@@ -29,7 +31,7 @@ public class MovieDAO
 {
 
     private static final String MOVIE_SOURCE = "data/movie_titles.txt";
-
+    private static final String TEMP= "E:\\GitHub\\MRS-master\\data\\temp.txt";
     /**
      * Gets a list of all movies in the persistence storage.
      *
@@ -136,10 +138,35 @@ public class MovieDAO
      *
      * @param movie The movie to delete.
      */
-    public void deleteMovie(Movie movie)
+    public void deleteMovie(String str) throws FileNotFoundException, IOException
     {
-        //TODO Delete movie
+        File file = new File(MOVIE_SOURCE);
+        File midlertidig = new File(TEMP);
+        
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedWriter wrider = new BufferedWriter(new FileWriter(midlertidig));
+        
+        String lineToRemove;
+        
+        while((lineToRemove = reader.readLine()) != null)
+        {
+            if(null!= lineToRemove && !lineToRemove.equalsIgnoreCase(str))
+            {
+                wrider.write(lineToRemove + System.getProperty("line.separator"));
+                
+            }
+            
+        }
+        wrider.close();
+        reader.close();
+        
+        boolean deleted = file.delete();
+        boolean successful = midlertidig.renameTo(file);
+        System.out.println(successful);
+    
+    
     }
+    
 
     /**
      * Updates the movie in the persistence storage to reflect the values in the
