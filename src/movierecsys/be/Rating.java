@@ -17,9 +17,8 @@ public class Rating {
     public static final int GOOD = 3;
     public static final int SUPER_GOOD = 5;
 
-    private final Movie movie;
-    private final User user;
-    private int rating;
+    
+    private int rating, movieId, userId;
 
     /**
      * Constructs a new rating.
@@ -29,10 +28,10 @@ public class Rating {
      * @param rating The value of the rating. Only the constants of the Rating
      * class are allowed values.
      */
-    public Rating(Movie movie, User user, int rating) {
-        this.movie = movie;
-        this.user = user;
-        setRating(rating);
+    public Rating(int movieId, int userId, int rating) {
+        this.movieId = movieId;
+        this.userId = userId;
+        this.rating = rating;
     }
 
     /**
@@ -52,7 +51,7 @@ public class Rating {
         if (rating == -5 || rating == - 3 || rating == 1 || rating == 3 || rating == 5) {
             return true;
         } else {
-            System.out.println("The rating for" + movie.getTitle() + " by " + user.getName() + " is not permittet");
+            
         }
         System.out.println("Choose one of the folloing scores:" + " " + SUPER_BAD + " " + BAD + " " + NEUTRAL + " " + GOOD + " " + SUPER_GOOD);
         return false;
@@ -64,8 +63,8 @@ public class Rating {
      *
      * @return A movie
      */
-    public Movie getMovie() {
-        return movie;
+    public int getMovie() {
+        return movieId;
     }
 
     /**
@@ -73,8 +72,8 @@ public class Rating {
      *
      * @return A user.
      */
-    public User getUser() {
-        return user;
+    public int getUser() {
+        return userId;
     }
 
     /**
@@ -88,7 +87,7 @@ public class Rating {
 
     @Override
     public String toString() {
-        return movie.getId() + "," + user.getId() + "," + rating;
+        return getMovie() + "," + getUser()+ "," + rating;
     }
 
 }

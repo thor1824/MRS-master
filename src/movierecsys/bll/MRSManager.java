@@ -100,7 +100,7 @@ public class MRSManager implements MRSLogicFacade {
     @Override
     public void rateMovie(Movie movie, User user, int rating) {
         try {
-            ratingDAO.createRating(new Rating(movie, user, rating));
+            ratingDAO.createRating(new Rating(movie.getId(), user.getId(), rating));
         } catch (IOException ex) {
             throw new IllegalArgumentException("Could not rate movie");
         }
