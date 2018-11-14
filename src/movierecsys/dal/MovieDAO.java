@@ -123,7 +123,7 @@ public class MovieDAO {
      *
      * @param movie The movie to delete.
      */
-    public void deleteMovie(String str) throws FileNotFoundException, IOException {
+    public void deleteMovie(Movie movie) throws FileNotFoundException, IOException {
         File file = new File(MOVIE_SOURCE);
         File midlertidig = new File("E:\\GitHub\\MRS-master\\data\\temp.txt");
 

@@ -9,10 +9,9 @@ package movierecsys.be;
  *
  * @author pgn
  */
-public class User
-{
+public class User {
 
-    private int id;
+    private final int id;
     private String name;
 
     /**
@@ -21,8 +20,7 @@ public class User
      * @param id Id of the user
      * @param name Name of the user
      */
-    public User(int id, String name)
-    {
+    public User(int id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -32,8 +30,7 @@ public class User
      *
      * @param name The new name
      */
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -42,8 +39,7 @@ public class User
      *
      * @return Id
      */
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
@@ -52,9 +48,13 @@ public class User
      *
      * @return Name of user.
      */
-    public String getName()
-    {
+    public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return id + "," + name;
     }
 
 }

@@ -8,6 +8,8 @@ package movierecsys.bll;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
 import movierecsys.be.User;
@@ -21,6 +23,7 @@ import movierecsys.dal.MovieDAO;
 public class MRSManager implements MRSLogicFacade {
 
     private final MovieDAO movieDAO;
+    
     
     public MRSManager()
     {
@@ -48,19 +51,32 @@ public class MRSManager implements MRSLogicFacade {
     @Override
     public List<Movie> searchMovies(String query)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public Movie createMovie(int year, String title)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Movie movie = new Movie(year, title);
+        try {
+           return movieDAO.createMovie(year, title);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Could not create movie");
+        }
+     
+       
+        
+        
     }
 
     @Override
     public void updateMovie(Movie movie)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            movieDAO.updateMovie(movie);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Could not update movie");
+        }
     }
 
     @Override
