@@ -7,6 +7,7 @@
 package movierecsys.bll;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,21 +16,26 @@ import movierecsys.be.Rating;
 import movierecsys.be.User;
 import movierecsys.bll.exception.MovieRecSysException;
 import movierecsys.dal.MovieDAO;
+import movierecsys.dal.RatingDAO;
 import movierecsys.dal.UserDAO;
 
 /**
  *
  * @author pgn
  */
-public class MRSManager implements MRSLogicFacade {
+public class MRSManager implements MRSLogicFacade
+{
 
     private final MovieDAO movieDAO;
     private final UserDAO userDAO;
+    private final RatingDAO ratingDAO;
     
     
     public MRSManager()
     {
         movieDAO = new MovieDAO();
+        userDAO = new UserDAO();
+        ratingDAO = new RatingDAO();
     }
     
     @Override
@@ -53,13 +59,24 @@ public class MRSManager implements MRSLogicFacade {
     @Override
     public List<Movie> searchMovies(String query)
     {
-        
+        List<Movie> seachList = new ArrayList<>();  
+        try {
+            List<Movie> movieList = movieDAO.getAllMovies();
+            for (Movie movie : movieList) {
+                if (movie.getTitle().contains(query))
+                    {
+                        seachList.add(movie);
+                    }
+            }
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Could not delete movie");
+        }
+        return seachList;
     }
 
     @Override
     public Movie createMovie(int year, String title)
     {
-        Movie movie = new Movie(year, title);
         try {
            return movieDAO.createMovie(year, title);
         } catch (IOException ex) {
@@ -82,13 +99,21 @@ public class MRSManager implements MRSLogicFacade {
     @Override
     public void deleteMovie(Movie movie)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            movieDAO.deleteMovie(movie);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Could not delete movie");
+        } 
     }
 
     @Override
     public void rateMovie(Movie movie, User user, int rating)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            ratingDAO.createRating(new Rating(movie, user, rating));
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Could not rate movie");
+        }
     }
 
     @Override
@@ -115,7 +140,7 @@ public class MRSManager implements MRSLogicFacade {
     public List<User> getAllUsers()
     {
         try {
-            userDAO.getAllUsers();
+             return userDAO.getAllUsers();
         } catch (IOException ex) {
            throw new IllegalArgumentException("Could not get list of users");
         }

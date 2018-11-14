@@ -32,6 +32,8 @@ import movierecsys.be.Movie;
 public class MovieDAO {
 
     private static final String MOVIE_SOURCE = "data/movie_titles.txt";
+    private static final String TEMP_SOURCE = "data/temp.txt";
+    
 
     /**
      * Gets a list of all movies in the persistence storage.
@@ -93,29 +95,11 @@ public class MovieDAO {
         return new Movie(id, releaseYear, title);
     }
 
-    private int getNextAvailableMovieID() throws IOException {
-        Path path = new File(MOVIE_SOURCE).toPath();
-        Stream<String> stream = Files.lines(path, Charset.defaultCharset());
-        String highIdLine = stream.max(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                int id1, id2;
-                String[] arrOne = o1.split(",");
-                String[] arrTwo = o2.split(",");
-                try {
-                    id1 = Integer.parseInt(arrOne[0]);
-                } catch (NumberFormatException nfe) {
-                    id1 = -1;
-                }
-                try {
-                    id2 = Integer.parseInt(arrTwo[0]);;
-                } catch (NumberFormatException mfe) {
-                    id2 = -1;
-                }
-                return Integer.compare(id1, id2);
-            }
-        }).get();
-        return Integer.parseInt(highIdLine.split(",")[0]) + 1;
+    private int getNextAvailableMovieID() throws IOException
+    {
+        List<Movie> allMovies = getAllMovies();
+        int highId = allMovies.get(allMovies.size() - 1).getId();
+        return highId + 1;
     }
 
     /**
@@ -125,22 +109,22 @@ public class MovieDAO {
      */
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException {
         File file = new File(MOVIE_SOURCE);
-        File midlertidig = new File("E:\\GitHub\\MRS-master\\data\\temp.txt");
+        File midlertidig = new File(TEMP_SOURCE);
 
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        BufferedWriter wrider = new BufferedWriter(new FileWriter(midlertidig));
-
-        String lineToRemove;
-
-        while ((lineToRemove = reader.readLine()) != null) {
-            if (null != lineToRemove && !lineToRemove.equalsIgnoreCase(str)) {
-                wrider.write(lineToRemove + System.getProperty("line.separator"));
-
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            BufferedWriter wrider = new BufferedWriter(new FileWriter(midlertidig));
+            
+            String lineToRemove;
+            
+            while ((lineToRemove = reader.readLine()) != null) {
+                if (null != lineToRemove && !lineToRemove.equalsIgnoreCase(movie.toString())) {
+                    wrider.write(lineToRemove + System.getProperty("line.separator"));
+                    
+                }
+                
             }
-
+            wrider.close();
         }
-        wrider.close();
-        reader.close();
 
         boolean deleted = file.delete();
         boolean successful = midlertidig.renameTo(file);
