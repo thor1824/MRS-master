@@ -23,6 +23,10 @@ public class Movie
         this.year = year;
     }
 
+    public Movie(int year, String title) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public int getId()
     {
         return id;
@@ -49,9 +53,8 @@ public class Movie
     }
 
     @Override
-    public String toString()
-    {
-        return "Movie{" + "id=" + id + ", title=" + title + ", year=" + year + '}';
+    public String toString() {
+        return id + "," + title + "," + year;
     }
     
     

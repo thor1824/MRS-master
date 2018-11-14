@@ -15,6 +15,7 @@ import movierecsys.be.Rating;
 import movierecsys.be.User;
 import movierecsys.bll.exception.MovieRecSysException;
 import movierecsys.dal.MovieDAO;
+import movierecsys.dal.UserDAO;
 
 /**
  *
@@ -23,6 +24,7 @@ import movierecsys.dal.MovieDAO;
 public class MRSManager implements MRSLogicFacade {
 
     private final MovieDAO movieDAO;
+    private final UserDAO userDAO;
     
     
     public MRSManager()
@@ -64,9 +66,7 @@ public class MRSManager implements MRSLogicFacade {
             throw new IllegalArgumentException("Could not create movie");
         }
      
-       
-        
-        
+            
     }
 
     @Override
@@ -94,19 +94,31 @@ public class MRSManager implements MRSLogicFacade {
     @Override
     public User createNewUser(String name)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+           return userDAO.createUser(name);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Could not create user");
+        }
     }
 
     @Override
     public User getUserById(int id)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            return userDAO.getUser(id);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 
     @Override
     public List<User> getAllUsers()
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            userDAO.getAllUsers();
+        } catch (IOException ex) {
+           throw new IllegalArgumentException("Could not get list of users");
+        }
     }
 
     /**
