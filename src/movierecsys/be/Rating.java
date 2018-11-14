@@ -88,7 +88,7 @@ public class Rating {
 
     @Override
     public String toString() {
-        return movie + "," + user + "," + rating;
+        return movie.getId() + "," + user.getId() + "," + rating;
     }
 
 }

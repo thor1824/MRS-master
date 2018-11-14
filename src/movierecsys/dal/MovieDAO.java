@@ -133,7 +133,7 @@ public class MovieDAO {
         String lineToRemove;
 
         while ((lineToRemove = reader.readLine()) != null) {
-            if (null != lineToRemove && !lineToRemove.equalsIgnoreCase(str)) {
+            if (null != lineToRemove && !lineToRemove.equalsIgnoreCase(movie.toString())) {
                 wrider.write(lineToRemove + System.getProperty("line.separator"));
 
             }
