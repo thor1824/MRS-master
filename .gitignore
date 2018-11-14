@@ -25,3 +25,9 @@ hs_err_pid*
 /dist/
 *.properties
 nbproject/private/private.xml
+nbproject/private/configs/Run_in_Browser.properties
+nbproject/private/private.properties
+nbproject/private/private.xml
+nbproject/private/private.properties
+nbproject/private/private.properties
+nbproject/private/private.xml
