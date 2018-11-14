@@ -12,10 +12,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import movierecsys.be.Movie;
 import movierecsys.be.User;
 import movierecsys.dal.MovieDAO;
-import movierecsys.dal.RatingDAO;
 import movierecsys.dal.UserDAO;
 
 /**
@@ -39,12 +37,6 @@ public final class OwsMain extends Application
      */
     public static void main(String[] args) throws IOException
     {
-        UserDAO userDAO = new UserDAO();
-        RatingDAO ratingDAO = new RatingDAO();
-        MovieDAO movieDAO = new MovieDAO();
-        
-        
-        
         System.out.println("done");
         System.exit(0);
     }

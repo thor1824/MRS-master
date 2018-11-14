@@ -30,7 +30,6 @@ import movierecsys.be.User;
 public class RatingDAO {
     private static final String TEMP_SOURCE = "data/temp.txt";
     private static final String RATING_SOURCE = "data/user_ratings";
-    private static final String TXTRATING_SOURCE = "data/ratings.txt";
     private static final int RECORD_SIZE = Integer.BYTES * 3;
 
     /**

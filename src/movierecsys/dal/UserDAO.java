@@ -134,14 +134,12 @@ public class UserDAO {
      */
     public User getUser(int id) throws IOException {
 
-        
         for (User user : getAllUsers()) {
             if (user.getId() == id) {
                 return user;
             }
 
-        }    
-        
+        }
         return null;
     }
 
@@ -190,8 +188,8 @@ public class UserDAO {
         writer.close();
         reader.close();
 
-        file.delete();
-        temp.renameTo(file);
-        
+        boolean deleted = file.delete();
+        boolean successful = temp.renameTo(file);
+        System.out.println(successful);
     }
 }
