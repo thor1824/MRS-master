@@ -161,8 +161,6 @@ public class RatingDAO {
      */
     public List<Rating> getAllRatings() throws IOException {
         List<Rating> allRatings = new ArrayList<>();
-        MovieDAO moviedao = new MovieDAO();
-        UserDAO userdao = new UserDAO();
         byte[] all = Files.readAllBytes(new File(RATING_SOURCE).toPath()); //I get all records as binary data!
         for (int i = 0; i < all.length; i += RECORD_SIZE) {
             int movieId = ByteBuffer.wrap(all, i, Integer.BYTES).order(ByteOrder.BIG_ENDIAN).getInt();
@@ -176,13 +174,13 @@ public class RatingDAO {
             }
 
         }
-        System.out.println("finish reading");
+        
         Collections.sort(allRatings, (Rating o1, Rating o2)
                 -> {
             int movieCompare = Integer.compare(o1.getMovie(), o2.getMovie());
             return movieCompare == 0 ? Integer.compare(o1.getUser(), o2.getUser()) : movieCompare;
         });
-        System.out.println("finnished sorting");
+        
         return allRatings;
     }
 
@@ -196,7 +194,7 @@ public class RatingDAO {
     public List<Rating> getRatings(User user) throws IOException {
         List<Rating> ratingsOfUser = new ArrayList<>();
         for (Rating rating : getAllRatings()) {
-            if (user.getId() == rating.getUser()) {
+            if (rating.getUser()== user.getId()) {
                 ratingsOfUser.add(rating);
             }
         }

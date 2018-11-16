@@ -7,9 +7,8 @@ package movierecsys.bll;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
 import movierecsys.be.User;
@@ -32,23 +31,88 @@ public class MRSManager implements MRSLogicFacade {
         movieDAO = new MovieDAO();
         ratingDAO = new RatingDAO();
         userDAO = new UserDAO();
-                
-        
+
     }
 
     @Override
-    public List<Rating> getRecommendedMovies(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Rating> getRatedMovies(User user) {
+        try {
+            return ratingDAO.getRatings(user);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Something went wrong when getting ratings from " + user.getName());
+        }
     }
 
     @Override
     public List<Movie> getAllTimeTopRatedMovies() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Movie> ratingAvg = new ArrayList<>();
+        try {
+            for (Movie movie : movieDAO.getAllMovies()) {
+
+                List<Rating> tempAvg = new ArrayList<>();
+                for (Rating rating : ratingDAO.getAllRatings()) {
+
+                    if (rating.getMovie() == movie.getId()) {
+                        tempAvg.add(rating);
+
+                    }
+
+                }
+                double movieAvg = 0;
+                for (Rating tempRating : tempAvg) {
+                    movieAvg += tempRating.getRating();
+
+                }
+                double avgRating = movieAvg / tempAvg.size();
+                Movie movieAndAvg = new Movie(movie.getId(), avgRating);
+                ratingAvg.add(movieAndAvg);
+
+            }
+
+            Collections.sort(ratingAvg, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating(), m1.getAvgRating()));
+            return ratingAvg;
+        } catch (IOException ex) {
+            throw new UnsupportedOperationException("Something wnt wrong when getting avg");
+        }
     }
 
     @Override
     public List<Movie> getMovieReccomendations(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            List<Rating> userRatings = ratingDAO.getRatings(userDAO.getUser(user.getId()));
+            List<Movie> movies = movieDAO.getAllMovies();
+            int listSize = 0;
+
+            for (User pairedUser : userDAO.getAllUsers()) {
+                List<Rating> listOfRatings = ratingDAO.getRatings(pairedUser);
+                int similarity = 0;
+                
+                for (Rating pairedUserRating : listOfRatings) {
+                    for (Rating userRating : userRatings) {
+                        if (userRating.getMovie() == pairedUserRating.getMovie()) {
+                            similarity += userRating.getRating() * pairedUserRating.getRating();
+                        }
+                    }
+                }
+                for (Rating PairedUserRating : listOfRatings) {
+                    for (Movie movie : movies) {
+                        if (PairedUserRating.getMovie() == movie.getId()) {
+                            movie.setRecommendationValue(movie.getRecommendationValue() + similarity * PairedUserRating.getRating());
+
+                        }
+                    }
+                }
+                listSize++;
+                if (listSize == 100) {
+                    break;
+                }
+            }
+
+            Collections.sort(movies, (Movie m1, Movie m2) -> Double.compare(m2.getRecommendationValue(), m1.getRecommendationValue()));
+            return movies;
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Could not get Recommended list");
+        }
     }
 
     @Override

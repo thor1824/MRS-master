@@ -17,7 +17,6 @@ public class Rating {
     public static final int GOOD = 3;
     public static final int SUPER_GOOD = 5;
 
-    
     private int rating, movieId, userId;
 
     /**
@@ -32,6 +31,7 @@ public class Rating {
         this.movieId = movieId;
         this.userId = userId;
         this.rating = rating;
+
     }
 
     /**
@@ -41,9 +41,8 @@ public class Rating {
      * @param rating The rating to set.
      */
     public void setRating(int rating) {
-        if (isLegalRating(rating)) {
-            this.rating = rating;
-        }
+
+        this.rating = rating;
 
     }
 
@@ -51,7 +50,7 @@ public class Rating {
         if (rating == -5 || rating == - 3 || rating == 1 || rating == 3 || rating == 5) {
             return true;
         } else {
-            
+
         }
         System.out.println("Choose one of the folloing scores:" + " " + SUPER_BAD + " " + BAD + " " + NEUTRAL + " " + GOOD + " " + SUPER_GOOD);
         return false;
@@ -87,7 +86,7 @@ public class Rating {
 
     @Override
     public String toString() {
-        return getMovie() + "," + getUser()+ "," + rating;
+        return getMovie() + "," + getUser() + "," + rating;
     }
 
 }

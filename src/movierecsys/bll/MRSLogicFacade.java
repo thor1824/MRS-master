@@ -23,7 +23,7 @@ public interface MRSLogicFacade
      * @param user The current user
      * @return Users ratings.
      */
-    List<Rating> getRecommendedMovies(User user);
+    List<Rating> getRatedMovies(User user);
 
     List<Movie> getAllMovies() throws MovieRecSysException; 
     
