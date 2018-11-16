@@ -32,6 +32,7 @@ import movierecsys.be.Movie;
 public class MovieDAO {
 
     private static final String MOVIE_SOURCE = "data/movie_titles.txt";
+    private static final String temp = "data/temp.txt";
 
     /**
      * Gets a list of all movies in the persistence storage.
@@ -125,10 +126,10 @@ public class MovieDAO {
      */
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException {
         File file = new File(MOVIE_SOURCE);
-        File midlertidig = new File("E:\\GitHub\\MRS-master\\data\\temp.txt");
+        File Temp = new File(temp);
 
         BufferedReader reader = new BufferedReader(new FileReader(file));
-        BufferedWriter wrider = new BufferedWriter(new FileWriter(midlertidig));
+        BufferedWriter wrider = new BufferedWriter(new FileWriter(Temp));
 
         String lineToRemove;
 
@@ -141,10 +142,7 @@ public class MovieDAO {
         }
         wrider.close();
         reader.close();
-
-        boolean deleted = file.delete();
-        boolean successful = midlertidig.renameTo(file);
-        System.out.println(successful);
+        
 
     }
 

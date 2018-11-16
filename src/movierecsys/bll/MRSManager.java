@@ -126,7 +126,7 @@ public class MRSManager implements MRSLogicFacade {
                 }
             }
         } catch (IOException ex) {
-            throw new IllegalArgumentException("Could not delete movie");
+            throw new IllegalArgumentException("Could not finde movie");
         }
         return seachList;
     }

@@ -1,37 +1,149 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="movierecsys.gui.controller.MovieRecController">
-   <top>
-      <VBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="772.0" prefWidth="1149.0" style="-fx-background-color: whit;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="movierecsys.gui.view.MovieRecViewController">
+   <children>
+      <VBox layoutX="16.0" layoutY="14.0" prefHeight="757.0" prefWidth="1118.0">
          <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" text="Movie Recommendation System" textAlignment="CENTER" VBox.vgrow="ALWAYS">
-               <font>
-                  <Font name="Book Antiqua Bold" size="30.0" />
-               </font>
+            <Label graphicTextGap="6.0" prefHeight="57.0" prefWidth="202.0" text="User">
+               <VBox.margin>
+                  <Insets left="3.0" />
+               </VBox.margin>
             </Label>
+            <TabPane prefHeight="697.0" prefWidth="1118.0" style="-fx-background-color: bla#e1e4e9ck; -fx-region-background: #e1e4e9;" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab style="-fx-border-color: black;" text="Movie finder">
+                     <content>
+                        <VBox prefHeight="741.0" prefWidth="1118.0">
+                           <children>
+                              <HBox prefHeight="44.0" prefWidth="1118.0">
+                                 <children>
+                                    <TextField prefHeight="31.0" prefWidth="393.0">
+                                       <HBox.margin>
+                                          <Insets left="2.0" right="7.0" top="4.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                    <Button mnemonicParsing="false" text="Button">
+                                       <HBox.margin>
+                                          <Insets top="4.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                              <ListView prefHeight="607.0" prefWidth="1118.0" style="-fx-background-color: lightgray;" />
+                           </children>
+                        </VBox>
+                     </content>
+                  </Tab>
+                <Tab style="-fx-border-color: black;" text="Recomendet">
+                     <content>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <ListView prefHeight="607.0" prefWidth="1118.0" style="-fx-background-color: lightgray;" />
+                              <ListView prefHeight="607.0" prefWidth="1118.0" style="-fx-background-color: lightgray;" />
+                           </children>
+                        </HBox>
+                     </content>
+                  </Tab>
+                  <Tab style="-fx-border-color: black;" text="Admin">
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <HBox prefHeight="136.0" prefWidth="1118.0">
+                                 <children>
+                                    <Label prefHeight="38.0" prefWidth="92.0" text="Add movie" />
+                                    <TextField />
+                                    <Button mnemonicParsing="false" text="Button">
+                                       <HBox.margin>
+                                          <Insets left="20.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="135.0" prefWidth="1118.0">
+                                 <children>
+                                    <Label prefHeight="38.0" prefWidth="92.0" text="Update movie" />
+                                    <TextField prefHeight="31.0" prefWidth="152.0" />
+                                    <Button mnemonicParsing="false" text="Button">
+                                       <HBox.margin>
+                                          <Insets left="20.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="135.0" prefWidth="1118.0">
+                                 <children>
+                                    <Label prefHeight="38.0" prefWidth="92.0" text="Delete movie" />
+                                    <TextField />
+                                    <Button mnemonicParsing="false" text="Button">
+                                       <HBox.margin>
+                                          <Insets left="20.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="123.0" prefWidth="1118.0">
+                                 <children>
+                                    <Label prefHeight="34.0" prefWidth="42.0" text="Rate:">
+                                       <HBox.margin>
+                                          <Insets left="14.0" top="17.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField prefHeight="28.0" prefWidth="286.0">
+                                       <HBox.margin>
+                                          <Insets left="14.0" top="17.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                    <Button fx:id="rat1" mnemonicParsing="false" text="1">
+                                       <HBox.margin>
+                                          <Insets left="14.0" top="17.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button fx:id="rat2" mnemonicParsing="false" text="2">
+                                       <HBox.margin>
+                                          <Insets left="14.0" top="17.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" text="3">
+                                       <HBox.margin>
+                                          <Insets left="14.0" top="17.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" text="4">
+                                       <HBox.margin>
+                                          <Insets left="14.0" top="17.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" text="5">
+                                       <HBox.margin>
+                                          <Insets left="14.0" top="17.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </content>
+                  </Tab>
+                  <Tab>
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
          </children>
-         <padding>
-            <Insets bottom="10.0" />
-         </padding>
-         <BorderPane.margin>
-            <Insets left="5.0" right="5.0" />
-         </BorderPane.margin>
       </VBox>
-   </top>
-   <center>
-      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
-         <children>
-            <TextField fx:id="txtMovieSearcjh" promptText="search movies" />
-            <ListView fx:id="lstMovies" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
-         </children>
-      </VBox>
-   </center>
-</BorderPane>
+   </children>
+</AnchorPane>
