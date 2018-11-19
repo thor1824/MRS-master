@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package movierecsys.dal;
+package movierecsys.dal.DB;
 
+import movierecsys.dal.interfaces.IMovieRepository;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import java.io.FileNotFoundException;
@@ -44,7 +45,6 @@ public class MovieDBDAO implements IMovieRepository {
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException {
         try (Connection con = ds.getConnection()) {
             Statement statement = con.createStatement();
-            statement.execute("SELECT * FROM Movie");
             statement.executeQuery("DELETE FROM Movie WHERE ID =" + movie.getId() + ";");
 
         } catch (SQLServerException ex) {
@@ -60,7 +60,7 @@ public class MovieDBDAO implements IMovieRepository {
         List<Movie> movies = new ArrayList<>();
         try (Connection con = ds.getConnection()) {
             Statement statement = con.createStatement();
-            statement.execute("SELECT * FROM Movie");
+
             ResultSet rs = statement.executeQuery("SELECT * FROM Movie;");
             while (rs.next()) {
                 int id = rs.getInt("MovieID");
@@ -80,7 +80,7 @@ public class MovieDBDAO implements IMovieRepository {
     public Movie getMovie(int id) throws IOException {
         try (Connection con = ds.getConnection()) {
             Statement statement = con.createStatement();
-            statement.execute("SELECT * FROM Movie");
+
             ResultSet rs = statement.executeQuery("SELECT * FROM Movie WHERE MovieID =" + id + ";");
             int year = rs.getInt("Year");
             String titel = rs.getString("Titel");
@@ -98,7 +98,7 @@ public class MovieDBDAO implements IMovieRepository {
     public void updateMovie(Movie movie) throws IOException {
         try (Connection con = ds.getConnection()) {
             Statement statement = con.createStatement();
-            statement.execute("SELECT * FROM Movie");
+
             statement.executeQuery("UPDATE Movie SET Titel = " + movie.getTitle() + ", Year = " + movie.getYear() + " WHERE MovieID = " + movie.getId() + ";");
 
         } catch (SQLServerException ex) {

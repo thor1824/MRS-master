@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package movierecsys.dal;
+package movierecsys.dal.DB;
 
+import movierecsys.dal.interfaces.IUserRepository;
 import java.io.IOException;
 import java.util.List;
 import movierecsys.be.User;

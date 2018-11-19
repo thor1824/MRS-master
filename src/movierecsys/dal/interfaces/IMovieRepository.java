@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package movierecsys.dal;
+package movierecsys.dal.interfaces;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import java.io.FileNotFoundException;

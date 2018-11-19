@@ -19,9 +19,9 @@ import movierecsys.be.Movie;
 import movierecsys.be.Rating;
 import movierecsys.be.User;
 import movierecsys.bll.MRSManager;
-import movierecsys.dal.MovieDAO;
-import movierecsys.dal.RatingDAO;
-import movierecsys.dal.UserDAO;
+import movierecsys.dal.File.MovieDAO;
+import movierecsys.dal.File.RatingDAO;
+import movierecsys.dal.File.UserDAO;
 
 /**
  *
