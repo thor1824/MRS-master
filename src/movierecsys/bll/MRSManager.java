@@ -8,7 +8,6 @@ package movierecsys.bll;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
@@ -17,7 +16,6 @@ import movierecsys.bll.exception.MovieRecSysException;
 import movierecsys.dal.MovieDAO;
 import movierecsys.dal.RatingDAO;
 import movierecsys.dal.UserDAO;
-import org.magicwerk.brownies.collections.BigList;
 
 /**
  *
@@ -50,14 +48,14 @@ public class MRSManager implements MRSLogicFacade {
     @Override
     public List<Movie> getAllTimeTopRatedMovies() {
         int size = 0;
-        BigList<Movie> movies = new BigList();
+        List<Movie> movies = new ArrayList();
         try {
             movies.addAll(movieDAO.getAllMovies());
         } catch (IOException ex) {
             System.out.println("cheese");
         }
 
-        BigList<Rating> ratings = new BigList<>();
+        List<Rating> ratings = new ArrayList<>();
         try {
             ratings.addAll(ratingDAO.getAllRatings());
         } catch (IOException ex) {
