@@ -28,11 +28,10 @@ public class MRSManager implements MRSLogicFacade {
     private final RatingDAO ratingDAO;
 
     public MRSManager() {
-        
+
         movieDAO = new MovieDAO();
         ratingDAO = new RatingDAO();
         userDAO = new UserDAO();
-        
 
     }
 
@@ -69,7 +68,7 @@ public class MRSManager implements MRSLogicFacade {
                     break;
                 }
             }
-            
+
         }
 
         Collections.sort(movies, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating(), m1.getAvgRating()));
@@ -108,7 +107,7 @@ public class MRSManager implements MRSLogicFacade {
                     }
                 }
                 listSize++;
-                if (listSize == 1000 ) {
+                if (listSize == 1000) {
                     break;
                 }
             }
@@ -118,6 +117,87 @@ public class MRSManager implements MRSLogicFacade {
         } catch (IOException ex) {
             throw new IllegalArgumentException("Could not get Recommended list");
         }
+    }
+
+    public List<Movie> getMovieReccomendations1(User user) throws IOException {
+        List<Rating> ratinglist = ratingDAO.getAllRatings();
+        List<Rating> userRatings = ratingDAO.getRatings(user, ratinglist);
+
+        List<Rating> pairedUserRatings = new ArrayList<>();
+        List<Movie> movies = movieDAO.getAllMovies();
+        List<Movie> reccommendedMovies = new ArrayList<>();
+        List<User> pairedUsers = userDAO.getAllUsers();
+        pairedUsers.remove(user);
+
+        Collections.sort(ratinglist, (Rating r1, Rating r2) -> Double.compare(r2.getUser(), r1.getUser()));
+
+        Rating priviuseRating = new Rating(0, 0, 0);
+        for (Rating rating : ratinglist) {
+
+            if (rating.getUser() != priviuseRating.getUser()) {
+
+                List<Rating> pairedTemp = new ArrayList();
+                List<Rating> userTempRatings = new ArrayList();
+                for (Rating userRating : userRatings) {
+                    for (Rating pairedUserRating : pairedUserRatings) {
+                        if (userRating.getMovie() == pairedUserRating.getMovie()) {
+                            pairedTemp.add(pairedUserRating);
+                            userTempRatings.add(userRating);
+                            break;
+                        }
+                    }
+                }
+                if (!pairedTemp.isEmpty()) {
+
+                    User pairedUser = userDAO.getUser(priviuseRating.getUser());
+
+                    List<Movie> ratedMovies = movieDAO.movieListfromRatingsIDs(pairedUserRatings, movies);
+
+                    int i = 0;
+                    int similarity = 0;
+
+                    for (Rating tempRating : pairedTemp) {
+                        if (userTempRatings.get(i).getMovie() == tempRating.getMovie()) {
+                            similarity += userTempRatings.get(i).getRating() * tempRating.getRating();
+                        } else {
+                            System.out.println("Something went wrong when pairing user and Other user");
+                            break;
+                        }
+                        i++;
+                        if (i >= pairedTemp.size()) {
+                            break;
+                        }
+                    }
+                    pairedUser.setSimilarity(similarity);
+                    reccommendedMovies.removeAll(ratedMovies);
+
+                    i = 0;
+                    for (Rating recommedMovieRatings : pairedUserRatings) {
+                        if (recommedMovieRatings.getMovie() == ratedMovies.get(i).getId()) {
+                            ratedMovies.get(i).setRecommendationValue(ratedMovies.get(i).getRecommendationValue() + similarity * recommedMovieRatings.getRating());
+                            reccommendedMovies.add(0, ratedMovies.get(i));
+
+                        } else {
+                            System.out.println("Somthing went wrong when setting RecommendedValue");
+                            break;
+                        }
+                        i++;
+                        if (i >= pairedUserRatings.size()) {
+                            break;
+                        }
+                    }
+
+                }
+
+                pairedUserRatings = new ArrayList<>();
+            } else {
+                pairedUserRatings.add(rating);
+            }
+            priviuseRating = rating;
+        }
+        Collections.sort(reccommendedMovies, (Movie m1, Movie m2) -> Integer.compare(m2.getRecommendationValue(), m1.getRecommendationValue())) ;
+        System.out.println("done");
+        return reccommendedMovies;
     }
 
     @Override
@@ -222,7 +302,5 @@ public class MRSManager implements MRSLogicFacade {
             throw new MovieRecSysException("Could not read all movies. Cause: " + ex.getMessage());
         }
     }
-    
-    
 
 }

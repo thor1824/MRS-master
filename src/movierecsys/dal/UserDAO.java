@@ -27,7 +27,7 @@ import movierecsys.be.User;
  *
  * @author pgn
  */
-public class UserDAO {
+public class UserDAO implements IUserRepository {
 
     /**
      * får fart i "users" i mappen af MovieRecommendationSystem-master/data
@@ -41,6 +41,7 @@ public class UserDAO {
      * @return List of users.
      * @throws java.io.IOException
      */
+    @Override
     public List<User> getAllUsers() throws IOException {
         List<User> allUsers = new ArrayList<>();
         File file = new File(USER_SOURCE);
@@ -83,6 +84,7 @@ public class UserDAO {
      * @return
      * @throws IOException 
      */
+    @Override
     public User createUser(String name) throws IOException {
         Path path = new File(USER_SOURCE).toPath();
         int id = -1;
@@ -132,6 +134,7 @@ public class UserDAO {
      * @return The User with the ID.
      * @throws java.io.IOException
      */
+    @Override
     public User getUser(int id) throws IOException {
 
         for (User user : getAllUsers()) {
@@ -149,6 +152,7 @@ public class UserDAO {
      * @param user The updated user.
      * @throws java.io.IOException
      */
+    @Override
     public void updateUser(User user) throws IOException {
         File tmp = new File(USER_SOURCE);
         List<User> allUsers = getAllUsers();
@@ -171,6 +175,7 @@ public class UserDAO {
      * @param user
      * @throws IOException 
      */
+    @Override
     public void deleteUser(User user) throws IOException {
         File file = new File(USER_SOURCE);
         File temp = new File(TEMP_SOURCE);

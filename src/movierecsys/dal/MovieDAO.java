@@ -20,12 +20,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import movierecsys.be.Movie;
+import movierecsys.be.Rating;
 
 /**
  *
  * @author pgn
  */
-public class MovieDAO {
+public class MovieDAO implements IMovieRepository {
 
     private static final String MOVIE_SOURCE = "data/movie_titles.txt";
     private static final String TEMP = "data/temp.txt";
@@ -35,6 +36,7 @@ public class MovieDAO {
      *
      * @return List of movies.
      */
+    @Override
     public List<Movie> getAllMovies() throws IOException {
         List<Movie> allMovies = new ArrayList<>();
         File file = new File(MOVIE_SOURCE);
@@ -54,6 +56,22 @@ public class MovieDAO {
         Collections.sort(allMovies, (Movie m1, Movie m2) -> Integer.compare(m1.getId(), m2.getId()));
 
         return allMovies;
+    }
+
+    public List<Movie> movieListfromRatingsIDs(List<Rating> inputRating, List<Movie> listOfAllMovies) {
+        List<Movie> outputMovieList = new ArrayList<>();
+        int i = 0;
+        for (Movie movie : listOfAllMovies) {
+            if (movie.getId() == inputRating.get(i).getMovie()) {
+                outputMovieList.add(movie);
+                i++;
+                if (i >= inputRating.size()) {
+                    break;
+                }
+            }
+        }
+        return outputMovieList;
+
     }
 
     /**
@@ -82,6 +100,7 @@ public class MovieDAO {
      * @return The object representation of the movie added to the persistence
      * storage.
      */
+    @Override
     public Movie createMovie(int releaseYear, String title) throws IOException {
         Path path = new File(MOVIE_SOURCE).toPath();
         int id = -1;
@@ -97,7 +116,7 @@ public class MovieDAO {
     private int getNextAvailableMovieID() throws IOException {
         List<Movie> list = getAllMovies();
         for (int i = 1; i < list.size(); i++) {
-            if (list.get(i-1).getId() != i) {
+            if (list.get(i - 1).getId() != i) {
                 return i;
             }
 
@@ -110,6 +129,7 @@ public class MovieDAO {
      *
      * @param movie The movie to delete.
      */
+    @Override
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException {
         File file = new File(MOVIE_SOURCE);
         File temp = new File(TEMP);
@@ -132,9 +152,6 @@ public class MovieDAO {
         Files.copy(temp.toPath(), file.toPath());
         temp.delete();
 
-        
-        
-
     }
 
     /**
@@ -144,6 +161,7 @@ public class MovieDAO {
      * @param movie The updated movie.
      * @throws java.io.IOException
      */
+    @Override
     public void updateMovie(Movie movie) throws IOException {
         File tmp = new File(MOVIE_SOURCE);
         List<Movie> allMovies = getAllMovies();
@@ -166,6 +184,7 @@ public class MovieDAO {
      * @param id ID of the movie.
      * @return A Movie object.
      */
+    @Override
     public Movie getMovie(int id) throws IOException {
         for (Movie movie : getAllMovies()) {
             if (movie.getId() == id) {

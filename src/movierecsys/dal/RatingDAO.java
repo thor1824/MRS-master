@@ -22,7 +22,7 @@ import movierecsys.be.User;
  *
  * @author pgn
  */
-public class RatingDAO {
+public class RatingDAO implements IRatingRepository {
 
     private static final String TEMP_SOURCE = "data/temp.txt";
     private static final String RATING_SOURCE = "data/user_ratings";
@@ -36,6 +36,7 @@ public class RatingDAO {
      * @return
      * @throws java.io.IOException
      */
+    @Override
     public Rating createRating(Rating rating) throws IOException {
         try (RandomAccessFile raf = new RandomAccessFile(RATING_SOURCE, "rw")) {
             long totalRatings = raf.length();
@@ -55,6 +56,7 @@ public class RatingDAO {
      * @param newRating The updated rating to persist.
      * @throws java.io.IOException
      */
+    @Override
     public boolean updateRating(Rating rating) throws IOException {
         try (RandomAccessFile raf = new RandomAccessFile(RATING_SOURCE, "rw")) {
             long totalRatings = raf.length();
@@ -101,6 +103,7 @@ public class RatingDAO {
      * @param rating
      * @throws java.io.IOException
      */
+    @Override
     public void deleteRating(Rating rating) throws IOException {
         try (RandomAccessFile raf = new RandomAccessFile(RATING_SOURCE, "rw")) {
             long totalRatings = raf.length();
@@ -151,6 +154,7 @@ public class RatingDAO {
      * @return List of all ratings.
      * @throws java.io.IOException
      */
+    @Override
     public List<Rating> getAllRatings() throws IOException {
         List<Rating> allRatings = new ArrayList<>();
         byte[] all = Files.readAllBytes(new File(RATING_SOURCE).toPath()); //I get all records as binary data!
@@ -193,6 +197,11 @@ public class RatingDAO {
             }
         }
         return ratingsOfUser;
+    }
+
+    @Override
+    public List<Rating> getRatings(User user) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -54,7 +54,7 @@ public class MovieRecViewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        boolean fullLoad = true;
+        boolean fullLoad = false;
         manager = new MRSManager();
         System.out.println("20%");
 
