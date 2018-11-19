@@ -8,6 +8,7 @@ package movierecsys.bll;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
@@ -16,6 +17,7 @@ import movierecsys.bll.exception.MovieRecSysException;
 import movierecsys.dal.MovieDAO;
 import movierecsys.dal.RatingDAO;
 import movierecsys.dal.UserDAO;
+import org.magicwerk.brownies.collections.BigList;
 
 /**
  *
@@ -28,16 +30,18 @@ public class MRSManager implements MRSLogicFacade {
     private final RatingDAO ratingDAO;
 
     public MRSManager() {
+        
         movieDAO = new MovieDAO();
         ratingDAO = new RatingDAO();
         userDAO = new UserDAO();
+        
 
     }
 
     @Override
     public List<Rating> getRatedMovies(User user) {
         try {
-            return ratingDAO.getRatings(user);
+            return ratingDAO.getRatings(user, ratingDAO.getAllRatings());
         } catch (IOException ex) {
             throw new IllegalArgumentException("Something went wrong when getting ratings from " + user.getName());
         }
@@ -45,65 +49,68 @@ public class MRSManager implements MRSLogicFacade {
 
     @Override
     public List<Movie> getAllTimeTopRatedMovies() {
-        List<Movie> ratingAvg = new ArrayList<>();
+        int size = 0;
+        BigList<Movie> movies = new BigList();
         try {
-            for (Movie movie : movieDAO.getAllMovies()) {
-
-                List<Rating> tempAvg = new ArrayList<>();
-                for (Rating rating : ratingDAO.getAllRatings()) {
-
-                    if (rating.getMovie() == movie.getId()) {
-                        tempAvg.add(rating);
-
-                    }
-
-                }
-                double movieAvg = 0;
-                for (Rating tempRating : tempAvg) {
-                    movieAvg += tempRating.getRating();
-
-                }
-                double avgRating = movieAvg / tempAvg.size();
-                Movie movieAndAvg = new Movie(movie.getId(), avgRating);
-                ratingAvg.add(movieAndAvg);
-
-            }
-
-            Collections.sort(ratingAvg, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating(), m1.getAvgRating()));
-            return ratingAvg;
+            movies.addAll(movieDAO.getAllMovies());
         } catch (IOException ex) {
-            throw new UnsupportedOperationException("Something wnt wrong when getting avg");
+            System.out.println("cheese");
         }
+
+        BigList<Rating> ratings = new BigList<>();
+        try {
+            ratings.addAll(ratingDAO.getAllRatings());
+        } catch (IOException ex) {
+            System.out.println("cheese");
+        }
+
+        for (Rating rating : ratings) {
+            for (Movie movie : movies) {
+                if (rating.getMovie() == movie.getId()) {
+                    movie.addToRatings(rating.getRating());
+                    break;
+                }
+            }
+            
+        }
+
+        Collections.sort(movies, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating(), m1.getAvgRating()));
+        return movies;
     }
 
     @Override
     public List<Movie> getMovieReccomendations(User user) {
         try {
-            List<Rating> userRatings = ratingDAO.getRatings(userDAO.getUser(user.getId()));
+            List<Rating> ratinglist = ratingDAO.getAllRatings();
+            List<Rating> userRatings = ratingDAO.getRatings(userDAO.getUser(user.getId()), ratinglist);
             List<Movie> movies = movieDAO.getAllMovies();
+            List<User> pairedUsers = userDAO.getAllUsers();
             int listSize = 0;
 
-            for (User pairedUser : userDAO.getAllUsers()) {
-                List<Rating> listOfRatings = ratingDAO.getRatings(pairedUser);
+            for (User pairedUser : pairedUsers) {
+                List<Rating> listOfRatings = ratingDAO.getRatings(pairedUser, ratinglist);
                 int similarity = 0;
-                
-                for (Rating pairedUserRating : listOfRatings) {
-                    for (Rating userRating : userRatings) {
-                        if (userRating.getMovie() == pairedUserRating.getMovie()) {
-                            similarity += userRating.getRating() * pairedUserRating.getRating();
+                if (listOfRatings.size() > 3) {
+
+                    for (Rating pairedUserRating : listOfRatings) {
+                        for (Rating userRating : userRatings) {
+                            if (userRating.getMovie() == pairedUserRating.getMovie()) {
+                                similarity += userRating.getRating() * pairedUserRating.getRating();
+                                break;
+                            }
                         }
                     }
-                }
-                for (Rating PairedUserRating : listOfRatings) {
-                    for (Movie movie : movies) {
-                        if (PairedUserRating.getMovie() == movie.getId()) {
-                            movie.setRecommendationValue(movie.getRecommendationValue() + similarity * PairedUserRating.getRating());
+                    for (Rating PairedUserRating : listOfRatings) {
+                        for (Movie movie : movies) {
+                            if (PairedUserRating.getMovie() == movie.getId()) {
+                                movie.setRecommendationValue(movie.getRecommendationValue() + similarity * PairedUserRating.getRating());
 
+                            }
                         }
                     }
                 }
                 listSize++;
-                if (listSize == 100) {
+                if (listSize == 1000 ) {
                     break;
                 }
             }
@@ -121,7 +128,7 @@ public class MRSManager implements MRSLogicFacade {
         try {
             List<Movie> movieList = movieDAO.getAllMovies();
             for (Movie movie : movieList) {
-                if (movie.getTitle().contains(query)) {
+                if (movie.getTitle().toLowerCase().contains(query)) {
                     seachList.add(movie);
                 }
             }
@@ -162,9 +169,12 @@ public class MRSManager implements MRSLogicFacade {
     }
 
     @Override
-    public void rateMovie(Movie movie, User user, int rating) {
+    public void rateMovie(int movieId, int userId, int rating) {
         try {
-            ratingDAO.createRating(new Rating(movie.getId(), user.getId(), rating));
+            Rating movieRating = new Rating(movieId, userId, rating);
+            if (!ratingDAO.updateRating(movieRating)) {
+                ratingDAO.createRating(movieRating);
+            }
         } catch (IOException ex) {
             throw new IllegalArgumentException("Could not rate movie");
         }
@@ -214,5 +224,7 @@ public class MRSManager implements MRSLogicFacade {
             throw new MovieRecSysException("Could not read all movies. Cause: " + ex.getMessage());
         }
     }
+    
+    
 
 }

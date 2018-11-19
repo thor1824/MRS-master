@@ -12,17 +12,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 import movierecsys.be.Movie;
 
 /**
@@ -32,7 +28,7 @@ import movierecsys.be.Movie;
 public class MovieDAO {
 
     private static final String MOVIE_SOURCE = "data/movie_titles.txt";
-    private static final String temp = "data/temp.txt";
+    private static final String TEMP = "data/temp.txt";
 
     /**
      * Gets a list of all movies in the persistence storage.
@@ -53,7 +49,10 @@ public class MovieDAO {
                     //Do nothing
                 }
             }
+            reader.close();
         }
+        Collections.sort(allMovies, (Movie m1, Movie m2) -> Integer.compare(m1.getId(), m2.getId()));
+
         return allMovies;
     }
 
@@ -90,33 +89,20 @@ public class MovieDAO {
                 StandardOpenOption.APPEND, StandardOpenOption.WRITE)) {
             id = getNextAvailableMovieID();
             bw.write(id + "," + releaseYear + "," + title);
+            bw.close();
         }
         return new Movie(id, releaseYear, title);
     }
 
     private int getNextAvailableMovieID() throws IOException {
-        Path path = new File(MOVIE_SOURCE).toPath();
-        Stream<String> stream = Files.lines(path, Charset.defaultCharset());
-        String highIdLine = stream.max(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                int id1, id2;
-                String[] arrOne = o1.split(",");
-                String[] arrTwo = o2.split(",");
-                try {
-                    id1 = Integer.parseInt(arrOne[0]);
-                } catch (NumberFormatException nfe) {
-                    id1 = -1;
-                }
-                try {
-                    id2 = Integer.parseInt(arrTwo[0]);;
-                } catch (NumberFormatException mfe) {
-                    id2 = -1;
-                }
-                return Integer.compare(id1, id2);
+        List<Movie> list = getAllMovies();
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i-1).getId() != i) {
+                return i;
             }
-        }).get();
-        return Integer.parseInt(highIdLine.split(",")[0]) + 1;
+
+        }
+        return list.size() + 1;
     }
 
     /**
@@ -126,15 +112,15 @@ public class MovieDAO {
      */
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException {
         File file = new File(MOVIE_SOURCE);
-        File Temp = new File(temp);
+        File temp = new File(TEMP);
 
         BufferedReader reader = new BufferedReader(new FileReader(file));
-        BufferedWriter wrider = new BufferedWriter(new FileWriter(Temp));
+        BufferedWriter wrider = new BufferedWriter(new FileWriter(temp));
 
         String lineToRemove;
 
         while ((lineToRemove = reader.readLine()) != null) {
-            if (null != lineToRemove && !lineToRemove.equalsIgnoreCase(movie.toString())) {
+            if (null != lineToRemove && !lineToRemove.equalsIgnoreCase(movie.dataSignatur())) {
                 wrider.write(lineToRemove + System.getProperty("line.separator"));
 
             }
@@ -142,6 +128,11 @@ public class MovieDAO {
         }
         wrider.close();
         reader.close();
+        file.delete();
+        Files.copy(temp.toPath(), file.toPath());
+        temp.delete();
+
+        
         
 
     }
@@ -158,16 +149,15 @@ public class MovieDAO {
         List<Movie> allMovies = getAllMovies();
         allMovies.removeIf((Movie v) -> v.getId() == movie.getId());
         allMovies.add(movie);
-        Collections.sort(allMovies, (Movie o1,Movie o2)-> Integer.compare(o1.getId(), o2.getId()));
-         try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp)))
-         {
-             for (Movie theMovie : allMovies)
-             {
-                 bw.write(theMovie.getId() + "," + theMovie.getYear() + "," + theMovie.getTitle());
-                 bw.newLine();
-             }
-         }
-         Files.copy(tmp.toPath(), new File(MOVIE_SOURCE).toPath(),StandardCopyOption.REPLACE_EXISTING);
+        Collections.sort(allMovies, (Movie o1, Movie o2) -> Integer.compare(o1.getId(), o2.getId()));
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp))) {
+            for (Movie theMovie : allMovies) {
+                bw.write(theMovie.getId() + "," + theMovie.getYear() + "," + theMovie.getTitle());
+                bw.newLine();
+            }
+            bw.close();
+        }
+        Files.copy(tmp.toPath(), new File(MOVIE_SOURCE).toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**

@@ -73,7 +73,7 @@ public interface MRSLogicFacade
      * @param user The user whom rates the movie.
      * @param rating The rating score of the movie
      */
-    void rateMovie(Movie movie, User user, int rating);
+    void rateMovie(int movieId, int userId, int rating);
 
     /**
      * Create a new user in the system.

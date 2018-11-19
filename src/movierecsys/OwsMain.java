@@ -41,28 +41,8 @@ public final class OwsMain extends Application {
      * @param args the command line argument
      */
     public static void main(String[] args) throws IOException {
-        MovieDAO movieDAO = new MovieDAO();
-        RatingDAO ratingDAO = new RatingDAO();
-        UserDAO userDAO = new UserDAO();
-        List<User> list = userDAO.getAllUsers();
-        MRSManager manager = new MRSManager();
-        List<Movie> movielist = manager.getMovieReccomendations(userDAO.getUser(7));
-        Vector<Movie> movieVector = new Vector<Movie>();
-        movieVector.addAll(movielist);
-        movieVector.setSize(20);
-        for (Movie movie : movieVector) {
-            System.out.println(movie + ":      " +movie.getRecommendationValue());
-        }
-//        Rating rating = new Rating(8,7,3);
-//        ratingDAO.updateRating(rating);
-//        List<Rating> qlist = ratingDAO.getAllRatings();
-//        System.out.println(qlist.get(0));
-//        ratingDAO.deleteRating(rating);
-//        List<Rating> alist = ratingDAO.getAllRatings();
-//        System.out.println(alist.get(0));
-//        
-        System.out.println("done");
-        System.exit(0);
+        launch(args);
+        
     }
 
 }

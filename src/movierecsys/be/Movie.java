@@ -5,6 +5,9 @@
  */
 package movierecsys.be;
 
+import java.util.List;
+import java.util.Vector;
+
 /**
  *
  * @author pgn
@@ -15,12 +18,27 @@ public class Movie {
     private String title;
     private int year, recommendationValue;
     private double avgRating;
+    private Vector<Integer> ratings;
 
     public Movie(int id, int year, String title) {
         this.id = id;
         this.title = title;
         this.year = year;
         recommendationValue = 0;
+        ratings = new Vector<>();
+
+    }
+
+    public double getAvgRating() {
+        if (ratings.size() > 0) {
+            int avg = 0;
+            for (Integer rating : ratings) {
+                avg += rating;
+            }
+            return avg / ratings.size();
+
+        }
+        return 0;
     }
 
     public int getRecommendationValue() {
@@ -29,11 +47,6 @@ public class Movie {
 
     public void setRecommendationValue(int recommendationValue) {
         this.recommendationValue = recommendationValue;
-    }
-
-    public Movie(int id, double avgRating) {
-        this.id = id;
-        this.avgRating = avgRating;
     }
 
     public int getId() {
@@ -56,8 +69,12 @@ public class Movie {
         this.year = year;
     }
 
-    public double getAvgRating() {
-        return avgRating;
+    public String dataSignatur() {
+        return id + "," + year + "," + title;
+    }
+
+    public void addToRatings(int rating) {
+        ratings.add(rating);
     }
 
     @Override

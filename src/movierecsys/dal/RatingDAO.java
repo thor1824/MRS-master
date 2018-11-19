@@ -37,18 +37,16 @@ public class RatingDAO {
      * @throws java.io.IOException
      */
     public Rating createRating(Rating rating) throws IOException {
-
-        FileOutputStream output = new FileOutputStream(RATING_SOURCE, true);
-        try {
-            output.write(rating.getMovie());
-            output.write(rating.getUser());
-            output.write(rating.getRating());
-
-        } finally {
-            output.close();
+        try (RandomAccessFile raf = new RandomAccessFile(RATING_SOURCE, "rw")) {
+            long totalRatings = raf.length();
+            raf.seek(totalRatings);
+            raf.writeInt(rating.getMovie());
+            raf.writeInt(rating.getUser());
+            raf.writeInt(rating.getRating());
+            return rating;
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Rating not found in file");
         }
-        return rating;
-
     }
 
     /**
@@ -57,7 +55,7 @@ public class RatingDAO {
      * @param newRating The updated rating to persist.
      * @throws java.io.IOException
      */
-    public void updateRating(Rating rating) throws IOException {
+    public boolean updateRating(Rating rating) throws IOException {
         try (RandomAccessFile raf = new RandomAccessFile(RATING_SOURCE, "rw")) {
             long totalRatings = raf.length();
             long low = 0;
@@ -86,10 +84,11 @@ public class RatingDAO {
                     } else //Last option, we found the right row:
                     {
                         raf.writeInt(rating.getRating()); //Remember the to reads at line 60,61. They positioned the filepointer just at the ratings part of the current record.
-                        return; //We return from the method. We are done here. The try with resources will close the connection to the file.
+                        return true; //We return from the method. We are done here. The try with resources will close the connection to the file.
                     }
                 }
             }
+            return false;
         } catch (Exception ex) {
             throw new IllegalArgumentException("Rating not found in file");
         }
@@ -167,15 +166,17 @@ public class RatingDAO {
             }
 
         }
-        
+
         Collections.sort(allRatings, (Rating o1, Rating o2)
                 -> {
             int movieCompare = Integer.compare(o1.getMovie(), o2.getMovie());
             return movieCompare == 0 ? Integer.compare(o1.getUser(), o2.getUser()) : movieCompare;
         });
-        
+
         return allRatings;
     }
+    
+    
 
     /**
      * Get all ratings from a specific user.
@@ -184,10 +185,10 @@ public class RatingDAO {
      * @return The list of ratings.
      * @throws java.io.IOException
      */
-    public List<Rating> getRatings(User user) throws IOException {
+    public List<Rating> getRatings(User user, List<Rating> ratings) throws IOException {
         List<Rating> ratingsOfUser = new ArrayList<>();
-        for (Rating rating : getAllRatings()) {
-            if (rating.getUser()== user.getId()) {
+        for (Rating rating : ratings) {
+            if (rating.getUser() == user.getId()) {
                 ratingsOfUser.add(rating);
             }
         }
