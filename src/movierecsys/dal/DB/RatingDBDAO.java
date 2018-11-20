@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import movierecsys.be.Movie;
 import movierecsys.be.Rating;
 import movierecsys.be.User;
 
@@ -35,14 +34,34 @@ public class RatingDBDAO implements IRatingRepository {
 
     @Override
     public Rating createRating(Rating rating) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try (Connection con = server.getConnection()) {
+            Statement statement = con.createStatement();
+            statement.executeQuery(
+                    "INSERT INTO Rating (MovieID, UserID, Rating) "
+                    + "VALUES (" + rating.getMovie() + ", " + rating.getUser() + ", " + rating.getRating() + ") "
+                    + "WHERE MovieID >" + rating.getMovie()
+                    + " AND MovieID < " + rating.getMovie()
+                    + " AND UserID > " + rating.getUser()
+                    + " AND UserID < " + rating.getUser()
+            );
+            return rating;
+
+        } catch (SQLServerException ex) {
+            Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public void deleteRating(Rating rating) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            statement.executeQuery("DELETE FROM Rating WHERE MovieID =" + rating.getMovie() + ", UserID" + rating.getUser());
+            statement.executeQuery("DELETE FROM Rating "
+                    + "WHERE MovieID =" + rating.getMovie()
+                    + " AND UserID" + rating.getUser()
+            );
 
         } catch (SQLServerException ex) {
             Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,7 +97,9 @@ public class RatingDBDAO implements IRatingRepository {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
 
-            statement.executeQuery("UPDATE Movie SET Rating = " + rating.getRating() + " WHERE MovieID = " + rating.getMovie() + ", UserID =" + rating.getUser());
+            statement.executeQuery("UPDATE Movie SET Rating = " + rating.getRating()
+                    + " WHERE MovieID = " + rating.getMovie()
+                    + " AND UserID =" + rating.getUser());
             return true;
         } catch (SQLServerException ex) {
             Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -91,7 +112,7 @@ public class RatingDBDAO implements IRatingRepository {
     @Override
     public List<Rating> getRatings(User user) {
         List<Rating> userRatings = new ArrayList<>();
-        
+
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
 

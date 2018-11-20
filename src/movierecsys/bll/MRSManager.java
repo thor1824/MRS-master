@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
 import movierecsys.be.User;
@@ -18,6 +16,9 @@ import movierecsys.bll.exception.MovieRecSysException;
 import movierecsys.dal.File.MovieDAO;
 import movierecsys.dal.File.RatingDAO;
 import movierecsys.dal.File.UserDAO;
+import movierecsys.dal.interfaces.IMovieRepository;
+import movierecsys.dal.interfaces.IRatingRepository;
+import movierecsys.dal.interfaces.IUserRepository;
 
 /**
  *
@@ -25,9 +26,9 @@ import movierecsys.dal.File.UserDAO;
  */
 public class MRSManager implements MRSLogicFacade {
 
-    private final MovieDAO movieDAO;
-    private final UserDAO userDAO;
-    private final RatingDAO ratingDAO;
+    private final IMovieRepository movieDAO;
+    private final IUserRepository userDAO;
+    private final IRatingRepository ratingDAO;
 
     public MRSManager() {
 
@@ -39,11 +40,7 @@ public class MRSManager implements MRSLogicFacade {
 
     @Override
     public List<Rating> getRatedMovies(User user) {
-        try {
-            return ratingDAO.getRatings(user, ratingDAO.getAllRatings());
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("Something went wrong when getting ratings from " + user.getName());
-        }
+        return ratingDAO.getRatings(user);
     }
 
     @Override
@@ -78,7 +75,7 @@ public class MRSManager implements MRSLogicFacade {
     @Override
     public List<Movie> getMovieReccomendations(User user) throws IOException {
         List<Rating> ratinglist = ratingDAO.getAllRatings();
-        List<Rating> userRatings = ratingDAO.getRatings(user, ratinglist);
+        List<Rating> userRatings = ratingDAO.getRatings(user);
         List<Movie> movies = movieDAO.getAllMovies();
         List<User> pairedUsers = userDAO.getAllUsers();
         List<Movie> reccommendedMovies = new ArrayList<>();
@@ -99,7 +96,7 @@ public class MRSManager implements MRSLogicFacade {
 
                 if (!pairedTemp.isEmpty()) {
                     User pairedUser = userDAO.getUser(priviuseRating.getUser());
-                    List<Movie> ratedMovies = movieDAO.movieListfromRatingsIDs(pairedUserRatings, movies);
+                    List<Movie> ratedMovies = movieListfromRatings(pairedUserRatings, movies);
                     int similarity = calculateSimilarity(pairedTemp, userTempRatings);
                     pairedUser.setSimilarity(similarity);
                     reccommendedMovies.removeAll(ratedMovies);
@@ -121,6 +118,14 @@ public class MRSManager implements MRSLogicFacade {
         return reccommendedMovies;
     }
 
+    /**
+     * Removes the rated movies that the loginUser And the pairedUser have not int common
+     * 
+     * @param userRatings
+     * @param pairedUserRatings
+     * @param pairedTemp
+     * @param userTempRatings 
+     */
     private void removeNonSimilarMovies(List<Rating> userRatings, List<Rating> pairedUserRatings, List<Rating> pairedTemp, List<Rating> userTempRatings) {
         for (Rating userRating : userRatings) {
             for (Rating pairedUserRating : pairedUserRatings) {
@@ -132,7 +137,39 @@ public class MRSManager implements MRSLogicFacade {
             }
         }
     }
-
+    
+    /**
+     * gets all the movie the from a list of ratings
+     * 
+     * @param inputRating
+     * @param listOfAllMovies
+     * @return
+     * @throws IOException 
+     */
+    private List<Movie> movieListfromRatings(List<Rating> inputRating, List<Movie> listOfAllMovies) throws IOException {
+        
+        List<Movie> outputMovieList = new ArrayList<>();
+        int i = 0;
+        for (Movie movie : listOfAllMovies) {
+            if (movie.getId() == inputRating.get(i).getMovie()) {
+                outputMovieList.add(movie);
+                i++;
+                if (i >= inputRating.size()) {
+                    break;
+                }
+            }
+        }
+        return outputMovieList;
+    }
+    
+    /**
+     * Calculate at Sets the RecommendationValue
+     * 
+     * @param pairedUserRatings
+     * @param ratedMovies
+     * @param similarity
+     * @param reccommendedMovies 
+     */
     private void setRecommendationsValue(List<Rating> pairedUserRatings, List<Movie> ratedMovies, int similarity, List<Movie> reccommendedMovies) {
         int i = 0;
         for (Rating recommedMovieRatings : pairedUserRatings) {
@@ -150,7 +187,15 @@ public class MRSManager implements MRSLogicFacade {
             }
         }
     }
-
+    
+    /**
+     * Calculate the Similarity between Users Ratings
+     * NEEDS TO BE RATINGS OF THE SAME MOVIES  
+     * 
+     * @param pairedTemp
+     * @param userTempRatings
+     * @return 
+     */
     private int calculateSimilarity(List<Rating> pairedTemp, List<Rating> userTempRatings) {
         int i = 0;
         int similarity = 0;

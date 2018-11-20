@@ -58,23 +58,7 @@ public class MovieDAO implements IMovieRepository {
 
         return allMovies;
     }
-
-    public List<Movie> movieListfromRatingsIDs(List<Rating> inputRating, List<Movie> listOfAllMovies) {
-        List<Movie> outputMovieList = new ArrayList<>();
-        int i = 0;
-        for (Movie movie : listOfAllMovies) {
-            if (movie.getId() == inputRating.get(i).getMovie()) {
-                outputMovieList.add(movie);
-                i++;
-                if (i >= inputRating.size()) {
-                    break;
-                }
-            }
-        }
-        return outputMovieList;
-
-    }
-
+    
     /**
      * Reads a movie from a , s
      *

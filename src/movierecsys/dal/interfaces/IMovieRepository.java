@@ -5,12 +5,11 @@
  */
 package movierecsys.dal.interfaces;
 
-import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import static javafx.scene.input.KeyCode.S;
 import movierecsys.be.Movie;
+import movierecsys.be.Rating;
 
 /**
  *
@@ -58,5 +57,7 @@ public interface IMovieRepository {
      * @throws java.io.IOException
      */
     void updateMovie(Movie movie) throws IOException;
+    
+    
     
 }
