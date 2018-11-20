@@ -15,12 +15,7 @@ import movierecsys.be.Rating;
  */
 public class MovieRecommender
 {
-    /**
-     * Returns a list of movie recommendations based on the highest total recommendations. Excluding already rated movies from the list of results.
-     * @param allRatings List of all users ratings.
-     * @param excludeRatings List of Ratings (aka. movies) to exclude.
-     * @return Sorted list of movies recommended to the caller. Sorted in descending order.
-     */
+     
     public List<Movie> highAverageRecommendations(List<Rating> allRatings, List<Rating> excludeRatings)
     {
         //TODO High average recommender

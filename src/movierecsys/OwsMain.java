@@ -45,7 +45,7 @@ public final class OwsMain extends Application {
         MRSManager mrs = new MRSManager();
         UserDAO uDAO = new UserDAO();
         User user = uDAO.getUser(7);
-        List<Movie> movies = mrs.getMovieReccomendations1(user);
+        List<Movie> movies = mrs.getMovieReccomendations(user);
         for (Movie movy : movies) {
             System.out.println(movy);
         }

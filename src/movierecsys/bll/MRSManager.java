@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
 import movierecsys.be.User;
@@ -45,159 +47,126 @@ public class MRSManager implements MRSLogicFacade {
     }
 
     @Override
-    public List<Movie> getAllTimeTopRatedMovies() {
-        int size = 0;
-        List<Movie> movies = new ArrayList();
-        try {
-            movies.addAll(movieDAO.getAllMovies());
-        } catch (IOException ex) {
-            System.out.println("cheese");
-        }
+    public List<Movie> getAllTimeTopRatedMovies() throws IOException {
+        List<Movie> topRatedMovies = new ArrayList<>();
 
-        List<Rating> ratings = new ArrayList<>();
-        try {
-            ratings.addAll(ratingDAO.getAllRatings());
-        } catch (IOException ex) {
-            System.out.println("cheese");
-        }
+        List<Movie> movies = movieDAO.getAllMovies();
+        List<Rating> ratings = ratingDAO.getAllRatings();
+        List<Rating> movieRatings = new ArrayList<>();
+
+        Rating priviuseRating = new Rating(0, 0, 0);
 
         for (Rating rating : ratings) {
-            for (Movie movie : movies) {
-                if (rating.getMovie() == movie.getId()) {
-                    movie.addToRatings(rating.getRating());
-                    break;
-                }
+            if (rating.getMovie() != priviuseRating.getMovie()) {
+                Movie movie = movieDAO.getMovie(priviuseRating.getMovie());
+                movie.addToRatings(movieRatings);
+                topRatedMovies.add(movie);
+                movieRatings = new ArrayList<>();
+                movieRatings.add(rating);
+            } else {
+                movieRatings.add(rating);
             }
 
+            priviuseRating = rating;
         }
 
-        Collections.sort(movies, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating(), m1.getAvgRating()));
-        return movies;
+        Collections.sort(topRatedMovies, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating(), m1.getAvgRating()));
+
+        return topRatedMovies;
     }
 
     @Override
-    public List<Movie> getMovieReccomendations(User user) {
-        try {
-            List<Rating> ratinglist = ratingDAO.getAllRatings();
-            List<Rating> userRatings = ratingDAO.getRatings(userDAO.getUser(user.getId()), ratinglist);
-            List<Movie> movies = movieDAO.getAllMovies();
-            List<User> pairedUsers = userDAO.getAllUsers();
-            int listSize = 0;
-
-            for (User pairedUser : pairedUsers) {
-                List<Rating> listOfRatings = ratingDAO.getRatings(pairedUser, ratinglist);
-                int similarity = 0;
-                if (listOfRatings.size() > 3) {
-
-                    for (Rating pairedUserRating : listOfRatings) {
-                        for (Rating userRating : userRatings) {
-                            if (userRating.getMovie() == pairedUserRating.getMovie()) {
-                                similarity += userRating.getRating() * pairedUserRating.getRating();
-                                break;
-                            }
-                        }
-                    }
-                    for (Rating PairedUserRating : listOfRatings) {
-                        for (Movie movie : movies) {
-                            if (PairedUserRating.getMovie() == movie.getId()) {
-                                movie.setRecommendationValue(movie.getRecommendationValue() + similarity * PairedUserRating.getRating());
-
-                            }
-                        }
-                    }
-                }
-                listSize++;
-                if (listSize == 1000) {
-                    break;
-                }
-            }
-
-            Collections.sort(movies, (Movie m1, Movie m2) -> Double.compare(m2.getRecommendationValue(), m1.getRecommendationValue()));
-            return movies;
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("Could not get Recommended list");
-        }
-    }
-
-    public List<Movie> getMovieReccomendations1(User user) throws IOException {
+    public List<Movie> getMovieReccomendations(User user) throws IOException {
         List<Rating> ratinglist = ratingDAO.getAllRatings();
         List<Rating> userRatings = ratingDAO.getRatings(user, ratinglist);
-
-        List<Rating> pairedUserRatings = new ArrayList<>();
         List<Movie> movies = movieDAO.getAllMovies();
-        List<Movie> reccommendedMovies = new ArrayList<>();
         List<User> pairedUsers = userDAO.getAllUsers();
+        List<Movie> reccommendedMovies = new ArrayList<>();
+        List<Rating> pairedUserRatings = new ArrayList<>();
+        List<Rating> pairedTemp;
+        List<Rating> userTempRatings;
         pairedUsers.remove(user);
-
+        ratinglist.removeAll(userRatings);
         Collections.sort(ratinglist, (Rating r1, Rating r2) -> Double.compare(r2.getUser(), r1.getUser()));
-
         Rating priviuseRating = new Rating(0, 0, 0);
+
         for (Rating rating : ratinglist) {
 
             if (rating.getUser() != priviuseRating.getUser()) {
+                pairedTemp = new ArrayList();
+                userTempRatings = new ArrayList();
+                removeNonSimilarMovies(userRatings, pairedUserRatings, pairedTemp, userTempRatings);
 
-                List<Rating> pairedTemp = new ArrayList();
-                List<Rating> userTempRatings = new ArrayList();
-                for (Rating userRating : userRatings) {
-                    for (Rating pairedUserRating : pairedUserRatings) {
-                        if (userRating.getMovie() == pairedUserRating.getMovie()) {
-                            pairedTemp.add(pairedUserRating);
-                            userTempRatings.add(userRating);
-                            break;
-                        }
-                    }
-                }
                 if (!pairedTemp.isEmpty()) {
-
                     User pairedUser = userDAO.getUser(priviuseRating.getUser());
-
                     List<Movie> ratedMovies = movieDAO.movieListfromRatingsIDs(pairedUserRatings, movies);
-
-                    int i = 0;
-                    int similarity = 0;
-
-                    for (Rating tempRating : pairedTemp) {
-                        if (userTempRatings.get(i).getMovie() == tempRating.getMovie()) {
-                            similarity += userTempRatings.get(i).getRating() * tempRating.getRating();
-                        } else {
-                            System.out.println("Something went wrong when pairing user and Other user");
-                            break;
-                        }
-                        i++;
-                        if (i >= pairedTemp.size()) {
-                            break;
-                        }
-                    }
+                    int similarity = calculateSimilarity(pairedTemp, userTempRatings);
                     pairedUser.setSimilarity(similarity);
                     reccommendedMovies.removeAll(ratedMovies);
-
-                    i = 0;
-                    for (Rating recommedMovieRatings : pairedUserRatings) {
-                        if (recommedMovieRatings.getMovie() == ratedMovies.get(i).getId()) {
-                            ratedMovies.get(i).setRecommendationValue(ratedMovies.get(i).getRecommendationValue() + similarity * recommedMovieRatings.getRating());
-                            reccommendedMovies.add(0, ratedMovies.get(i));
-
-                        } else {
-                            System.out.println("Somthing went wrong when setting RecommendedValue");
-                            break;
-                        }
-                        i++;
-                        if (i >= pairedUserRatings.size()) {
-                            break;
-                        }
-                    }
-
+                    setRecommendationsValue(pairedUserRatings, ratedMovies, similarity, reccommendedMovies);
                 }
 
                 pairedUserRatings = new ArrayList<>();
+                pairedUserRatings.add(rating);
+
             } else {
                 pairedUserRatings.add(rating);
             }
+
             priviuseRating = rating;
         }
-        Collections.sort(reccommendedMovies, (Movie m1, Movie m2) -> Integer.compare(m2.getRecommendationValue(), m1.getRecommendationValue())) ;
+
+        Collections.sort(reccommendedMovies, (Movie m1, Movie m2) -> Integer.compare(m2.getRecommendationValue(), m1.getRecommendationValue()));
         System.out.println("done");
         return reccommendedMovies;
+    }
+
+    private void removeNonSimilarMovies(List<Rating> userRatings, List<Rating> pairedUserRatings, List<Rating> pairedTemp, List<Rating> userTempRatings) {
+        for (Rating userRating : userRatings) {
+            for (Rating pairedUserRating : pairedUserRatings) {
+                if (userRating.getMovie() == pairedUserRating.getMovie()) {
+                    pairedTemp.add(pairedUserRating);
+                    userTempRatings.add(userRating);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void setRecommendationsValue(List<Rating> pairedUserRatings, List<Movie> ratedMovies, int similarity, List<Movie> reccommendedMovies) {
+        int i = 0;
+        for (Rating recommedMovieRatings : pairedUserRatings) {
+            if (recommedMovieRatings.getMovie() == ratedMovies.get(i).getId()) {
+                ratedMovies.get(i).setRecommendationValue(ratedMovies.get(i).getRecommendationValue() + similarity * recommedMovieRatings.getRating());
+                reccommendedMovies.add(0, ratedMovies.get(i));
+
+            } else {
+                System.out.println("Somthing went wrong when setting RecommendedValue");
+                break;
+            }
+            i++;
+            if (i >= pairedUserRatings.size()) {
+                break;
+            }
+        }
+    }
+
+    private int calculateSimilarity(List<Rating> pairedTemp, List<Rating> userTempRatings) {
+        int i = 0;
+        int similarity = 0;
+        for (Rating tempRating : pairedTemp) {
+            if (userTempRatings.get(i).getMovie() == tempRating.getMovie()) {
+                similarity += userTempRatings.get(i).getRating() * tempRating.getRating();
+            } else {
+                System.out.println("Something went wrong when pairing user and Other user");
+                break;
+            }
+            i++;
+            if (i >= pairedTemp.size()) {
+                break;
+            }
+        }
+        return similarity;
     }
 
     @Override

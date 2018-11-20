@@ -5,6 +5,7 @@
  */
 package movierecsys.bll;
 
+import java.io.IOException;
 import java.util.List;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
@@ -23,7 +24,7 @@ public interface MRSLogicFacade
      * @param user The current user
      * @return Users ratings.
      */
-    List<Rating> getRatedMovies(User user);
+    List<Rating> getRatedMovies(User user) throws IOException;
 
     List<Movie> getAllMovies() throws MovieRecSysException; 
     
@@ -31,14 +32,14 @@ public interface MRSLogicFacade
      * Gets a list of all movies sorted by their rating.
      * @return A list of movies.
      */
-    List<Movie> getAllTimeTopRatedMovies();
+    List<Movie> getAllTimeTopRatedMovies() throws IOException;
 
     /**
      * Gets a list of movies recommended for the given user.
      * @param user The user we are recommending movies to.
      * @return List of recommended movies sorted in descending order.
      */
-    List<Movie> getMovieReccomendations(User user);
+    List<Movie> getMovieReccomendations(User user) throws IOException;
 
     /**
      * Searches for all mmovies that matches the given query somehow.

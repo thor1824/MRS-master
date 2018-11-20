@@ -5,6 +5,7 @@
  */
 package movierecsys.be;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -18,22 +19,22 @@ public class Movie {
     private String title;
     private int year, recommendationValue;
     private double avgRating;
-    private Vector<Integer> ratings;
+    private List<Rating> ratings;
 
     public Movie(int id, int year, String title) {
         this.id = id;
         this.title = title;
         this.year = year;
         recommendationValue = 0;
-        ratings = new Vector<>();
+        ratings = new ArrayList<>();
 
     }
 
     public double getAvgRating() {
         if (ratings.size() > 0) {
             int avg = 0;
-            for (Integer rating : ratings) {
-                avg += rating;
+            for (Rating rating : ratings) {
+                avg += rating.getRating();
             }
             return avg / ratings.size();
 
@@ -73,8 +74,8 @@ public class Movie {
         return id + "," + year + "," + title;
     }
 
-    public void addToRatings(int rating) {
-        ratings.add(rating);
+    public void addToRatings(List<Rating> addetions) {
+        ratings.addAll(addetions);
     }
 
     @Override

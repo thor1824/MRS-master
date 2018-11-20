@@ -35,29 +35,29 @@ public class Mitigator
      */
     public static void main(String[] args) throws IOException
     {
-        mitigateMovies();
-        mitigateUsers();
-        mitigateRatings();
+        //mitigateMovies();
+        //mitigateUsers();
+        //mitigateRatings();
     }
 
     public static void mitigateUsers() throws IOException
     {
         SQLServerDataSource ds = new SQLServerDataSource();
         ds.setServerName("10.176.111.31");
-        ds.setDatabaseName("mrs");
-        ds.setUser("CS2018A_40");
-        ds.setPassword("CS2018A_40");
+        ds.setDatabaseName("movie");
+        ds.setUser("CS2018A_32");
+        ds.setPassword("CS2018A_32");
 
         List<User> users = new UserDAO().getAllUsers();
 
         try (Connection con = ds.getConnection())
         {
             Statement statement = con.createStatement();
-            statement.executeQuery("DELETE FROM User");
+            
             int counter = 0;
             for (User user : users)
             {
-                String sql = "INSERT INTO User (id,name) VALUES("
+                String sql = "INSERT INTO [User] (UserID, Name) VALUES("
                         + user.getId() + ",'"
                         + user.getName() + "');";
                 statement.addBatch(sql);
@@ -89,17 +89,17 @@ public class Mitigator
         List<Rating> allRatings = new RatingDAO().getAllRatings();
         SQLServerDataSource ds = new SQLServerDataSource();
         ds.setServerName("10.176.111.31");
-        ds.setDatabaseName("mrs");
-        ds.setUser("CS2018A_40");
-        ds.setPassword("CS2018A_40");
+        ds.setDatabaseName("movie");
+        ds.setUser("CS2018A_32");
+        ds.setPassword("CS2018A_32");
         try (Connection con = ds.getConnection())
         {
             Statement statement = con.createStatement();
-            statement.executeQuery("DELETE FROM Ratings");
+            
             int counter = 0;
             for (Rating rating : allRatings)
             {
-                String sql = "INSERT INTO Rating (movieId, userId, score) VALUES ("
+                String sql = "INSERT INTO Rating (MovieId, UserId, Rating) VALUES ("
                         + rating.getMovie() + ","
                         + rating.getUser() + ","
                         + rating.getRating()
@@ -127,9 +127,9 @@ public class Mitigator
     {
         SQLServerDataSource ds = new SQLServerDataSource();
         ds.setServerName("10.176.111.31");
-        ds.setDatabaseName("mrs");
-        ds.setUser("CS2018A_40");
-        ds.setPassword("CS2018A_40");
+        ds.setDatabaseName("movie");
+        ds.setUser("CS2018A_32");
+        ds.setPassword("CS2018A_32");
 
         MovieDAO mvDao = new MovieDAO();
         List<Movie> movies = mvDao.getAllMovies();
@@ -137,14 +137,14 @@ public class Mitigator
         try (Connection con = ds.getConnection())
         {
             Statement statement = con.createStatement();
-            statement.executeQuery("DELETE FROM Movie");
+            
 
             for (Movie movie : movies)
             {
-                String sql = "INSERT INTO Movie (id,year,title) VALUES("
-                        + movie.getId() + ","
-                        + movie.getYear() + ",'"
-                        + movie.getTitle().replace("'", "") + "');";
+                String sql = "INSERT INTO Movie (MovieID,Titel,Year) VALUES("
+                        + movie.getId() + ",'"
+                        + movie.getTitle().replace("'", "") + "',"
+                        + movie.getYear() + ");";
                 System.out.println(sql);
                 int i = statement.executeUpdate(sql);
                 // INSERT INTO Movie (id,year,title) VALUES (1,2018,Venom);

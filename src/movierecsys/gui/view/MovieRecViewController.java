@@ -5,9 +5,12 @@
  */
 package movierecsys.gui.view;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -66,15 +69,19 @@ public class MovieRecViewController implements Initializable {
         System.out.println("60%");
 
         if (fullLoad) {
-            Vector<Movie> vectorRecc = new Vector<>(manager.getMovieReccomendations(loginUser));
-            vectorRecc.setSize(30);
-            listReccomended.getItems().addAll(vectorRecc);
-            System.out.println("80%");
-
-            Vector<Movie> vectorAvg = new Vector<>(manager.getAllTimeTopRatedMovies());
-            vectorAvg.setSize(30);
-            listTopRated.getItems().addAll(vectorAvg);
-            System.out.println("100%");
+            try {
+                Vector<Movie> vectorRecc = new Vector<>(manager.getMovieReccomendations(loginUser));
+                vectorRecc.setSize(30);
+                listReccomended.getItems().addAll(vectorRecc);
+                System.out.println("80%");
+                
+                Vector<Movie> vectorAvg = new Vector<>(manager.getAllTimeTopRatedMovies());
+                vectorAvg.setSize(30);
+                listTopRated.getItems().addAll(vectorAvg);
+                System.out.println("100%");
+            } catch (IOException ex) {
+                Logger.getLogger(MovieRecViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
