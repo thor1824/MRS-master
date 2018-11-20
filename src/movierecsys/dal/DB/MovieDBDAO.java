@@ -5,6 +5,7 @@
  */
 package movierecsys.dal.DB;
 
+import movierecsys.dal.ServerConnect;
 import movierecsys.dal.interfaces.IMovieRepository;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import java.io.FileNotFoundException;

@@ -5,6 +5,7 @@
  */
 package movierecsys.dal.DB;
 
+import movierecsys.dal.ServerConnect;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import movierecsys.dal.interfaces.IRatingRepository;
 import java.io.IOException;
