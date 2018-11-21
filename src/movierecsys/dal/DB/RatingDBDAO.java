@@ -36,13 +36,9 @@ public class RatingDBDAO implements IRatingRepository {
     public Rating createRating(Rating rating) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            statement.executeQuery(
+            statement.execute(
                     "INSERT INTO Rating (MovieID, UserID, Rating) "
                     + "VALUES (" + rating.getMovie() + ", " + rating.getUser() + ", " + rating.getRating() + ") "
-                    + "WHERE MovieID >" + rating.getMovie()
-                    + " AND MovieID < " + rating.getMovie()
-                    + " AND UserID > " + rating.getUser()
-                    + " AND UserID < " + rating.getUser()
             );
             return rating;
 
@@ -58,9 +54,9 @@ public class RatingDBDAO implements IRatingRepository {
     public void deleteRating(Rating rating) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            statement.executeQuery("DELETE FROM Rating "
+            statement.execute("DELETE FROM Rating "
                     + "WHERE MovieID =" + rating.getMovie()
-                    + " AND UserID" + rating.getUser()
+                    + " AND UserID =" + rating.getUser()
             );
 
         } catch (SQLServerException ex) {
@@ -97,7 +93,7 @@ public class RatingDBDAO implements IRatingRepository {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
 
-            statement.executeQuery("UPDATE Movie SET Rating = " + rating.getRating()
+            statement.execute("UPDATE Movie SET Rating = " + rating.getRating()
                     + " WHERE MovieID = " + rating.getMovie()
                     + " AND UserID =" + rating.getUser());
             return true;
@@ -117,7 +113,7 @@ public class RatingDBDAO implements IRatingRepository {
             Statement statement = con.createStatement();
 
             ResultSet rs = statement.executeQuery("SELECT * FROM Rating WHERE UserID = " + user.getId());
-            while (rs.next() && rs.getInt("UserID") == user.getId()) {
+            while (rs.next()) {
                 int movieID = rs.getInt("MovieID");
                 int userID = rs.getInt("UserID");
                 int score = rs.getInt("Rating");

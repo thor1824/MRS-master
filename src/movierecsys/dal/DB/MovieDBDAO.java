@@ -41,7 +41,7 @@ public class MovieDBDAO implements IMovieRepository {
             Movie movie = new Movie(id, releaseYear, title);
             statement.execute(
                     "INSERT INTO Movie (MovieID, Titel, Year) "
-                    + "VALUES (" + id + ",' " + title + "', " + releaseYear + ") "
+                    + "VALUES (" + id + ", '" + title + "', " + releaseYear + ") "
                    
             );
 
@@ -137,6 +137,4 @@ public class MovieDBDAO implements IMovieRepository {
             Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    
 }

@@ -35,13 +35,11 @@ public class UserDBDAO implements IUserRepository {
     public User createUser(String name) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            int id = 0;
+            int id = getNextAvailableMovieID();
             User user = new User(id, name);
             statement.execute(
                     "INSERT INTO User (UserID, Name) "
-                    + "VALUES (" + id + ", " + name + ")"
-                    + " WHERE UserID >" + id
-                    + " AND UserID <" + id
+                    + "VALUES (" + id + ", '" + name + "')"
             );
 
             return user;
@@ -52,6 +50,13 @@ public class UserDBDAO implements IUserRepository {
             Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+    
+    private int getNextAvailableMovieID() throws IOException
+    {
+        List<User> allMovies = getAllUsers();
+        int highId = allMovies.get(allMovies.size() - 1).getId();
+        return highId + 1;
     }
 
     @Override
