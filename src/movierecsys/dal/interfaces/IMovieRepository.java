@@ -9,11 +9,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import movierecsys.be.Movie;
-import movierecsys.be.Rating;
 
 /**
  *
- * @author thor1
+ * @author Thorbjørn Schultz Damkjær
  */
 public interface IMovieRepository {
 

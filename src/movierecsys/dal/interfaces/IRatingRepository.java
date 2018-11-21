@@ -12,7 +12,7 @@ import movierecsys.be.User;
 
 /**
  *
- * @author thor1
+ * @author Thorbjørn Schultz Damkjær
  */
 public interface IRatingRepository {
 
@@ -49,5 +49,5 @@ public interface IRatingRepository {
      */
     boolean updateRating(Rating rating) throws IOException;
     
-    public List<Rating> getRatings(User user);
+    public List<Rating> getRatings(User user) throws IOException;
 }

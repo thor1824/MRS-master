@@ -32,7 +32,7 @@ public interface MRSLogicFacade
      * Gets a list of all movies sorted by their rating.
      * @return A list of movies.
      */
-    List<Movie> getAllTimeTopRatedMovies() throws IOException;
+    List<Movie> getAllTimeTopRatedMovies(User user) throws IOException;
 
     /**
      * Gets a list of movies recommended for the given user.
@@ -46,7 +46,7 @@ public interface MRSLogicFacade
      * @param query The search query
      * @return A list of movies that matches the search query.
      */
-    List<Movie> searchMovies(String query);
+    List<Movie> searchMovies(List<Movie> searchBase, String query);
 
     /**
      * Create and add a new movie to the systems storage.

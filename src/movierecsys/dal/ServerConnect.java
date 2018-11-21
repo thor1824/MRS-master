@@ -11,7 +11,7 @@ import java.sql.Connection;
 
 /**
  *
- * @author thor1
+ * @author Andreas
  */
 public class ServerConnect {
 

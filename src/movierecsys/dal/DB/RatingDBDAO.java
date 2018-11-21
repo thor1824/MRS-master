@@ -22,7 +22,7 @@ import movierecsys.be.User;
 
 /**
  *
- * @author thor1
+ * @author Thorbjørn Schultz Damkjær
  */
 public class RatingDBDAO implements IRatingRepository {
 

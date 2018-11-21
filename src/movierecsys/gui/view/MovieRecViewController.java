@@ -11,34 +11,30 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
 import movierecsys.be.User;
-import movierecsys.bll.MRSManager;
+import movierecsys.bll.exception.MovieRecSysException;
+import movierecsys.gui.model.MovieModel;
 
 /**
  * FXML Controller class
  *
- * @author Shark
+ * @author Thorbjørn Schultz Damkjær
  */
 public class MovieRecViewController implements Initializable {
 
     @FXML
     private Label lblName;
-    @FXML
-    private ListView<Movie> listSeach, listReccomended, listTopRated;
-    @FXML
-    private TextField txtUpdateMovieID, txtUpdateMovieTitel, txtUpdateMovieYear, txtSeach,
-            txtDeleteMovieID, txtDeleteMovieTitel1, txtDeleteMovieYear, txtRateMovieID, txtAddMovieTitel, txtAddMovieYear, txtCreateUser;
-    MRSManager manager;
-    User loginUser;
     @FXML
     private Label lblAdd;
     @FXML
@@ -51,38 +47,42 @@ public class MovieRecViewController implements Initializable {
     private Label lblRated;
     @FXML
     private ListView<Rating> listRatings;
+    @FXML
+    private Label lblTopRated;
+    @FXML
+    private Label lblRecomendation;
+    @FXML
+    private ListView<Movie> listSeach, listReccomended, listTopRated;
+    @FXML
+    private TextField txtUpdateMovieID, txtUpdateMovieTitel, txtUpdateMovieYear, txtSeach,
+            txtDeleteMovieID, txtDeleteMovieTitel1, txtDeleteMovieYear, txtRateMovieID, txtAddMovieTitel, txtAddMovieYear, txtCreateUser;
+    
+    
+    private MovieModel manager;
+    private User loginUser;
+    
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        boolean fullLoad = false;
-        manager = new MRSManager();
-        System.out.println("20%");
+        try {
+            manager = new MovieModel();
+        } catch (MovieRecSysException ex) {
+            Logger.getLogger(MovieRecViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         loginUser = manager.getUserById(7);
-        System.out.println("40%");
-
         lblName.setText(loginUser.getName());
-        updateUserRating();
-        System.out.println("60%");
 
-        if (fullLoad) {
-            try {
-                Vector<Movie> vectorRecc = new Vector<>(manager.getMovieReccomendations(loginUser));
-                vectorRecc.setSize(30);
-                listReccomended.getItems().addAll(vectorRecc);
-                System.out.println("80%");
-                
-                Vector<Movie> vectorAvg = new Vector<>(manager.getAllTimeTopRatedMovies());
-                vectorAvg.setSize(30);
-                listTopRated.getItems().addAll(vectorAvg);
-                System.out.println("100%");
-            } catch (IOException ex) {
-                Logger.getLogger(MovieRecViewController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        try {
+            updateUserRating();
+        } catch (IOException ex) {
+            Logger.getLogger(MovieRecViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        updateRecommended();
+        updateHighestAvg();
     }
 
     @FXML
@@ -133,36 +133,36 @@ public class MovieRecViewController implements Initializable {
     }
 
     @FXML
-    private void rat1(ActionEvent event) {
+    private void rat1(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), -5);
         updateUserRating();
     }
 
     @FXML
-    private void rat2(ActionEvent event) {
+    private void rat2(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), -3);
         updateUserRating();
     }
 
     @FXML
-    private void rat3(ActionEvent event) {
+    private void rat3(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), 1);
         updateUserRating();
     }
 
     @FXML
-    private void rat4(ActionEvent event) {
+    private void rat4(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), 3);
         updateUserRating();
     }
 
     @FXML
-    private void rat5(ActionEvent event) {
+    private void rat5(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), 5);
         updateUserRating();
     }
 
-    private void updateUserRating() {
+    private void updateUserRating() throws IOException {
         listRatings.getItems().clear();
         listRatings.getItems().addAll(manager.getRatedMovies(loginUser));
 
@@ -172,6 +172,52 @@ public class MovieRecViewController implements Initializable {
     private void writeSeach(KeyEvent event) {
         listSeach.getItems().clear();
         listSeach.getItems().addAll(manager.searchMovies(txtSeach.getText().toLowerCase()));
+    }
+
+    private void updateRecommended() {
+        Thread t1 = new Thread(() -> {
+
+            try {
+                String text = lblRecomendation.getText();
+                lblRecomendation.setText(text + "  Loading...");
+                Vector<Movie> vectorRecc = new Vector<>(manager.getMovieReccomendations(loginUser));
+                vectorRecc.setSize(30);
+
+                Platform.runLater(() -> {
+                    lblRecomendation.setText(text);
+                    listReccomended.getItems().addAll(vectorRecc);
+                });
+            } catch (IOException ex) {
+                Logger.getLogger(MovieRecViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        t1.setDaemon(true);
+        t1.start();
+
+    }
+
+    private void updateHighestAvg() {
+        Thread t2 = new Thread(() -> {
+            try {
+                String text = lblTopRated.getText();
+                lblTopRated.setText(text + "  Loading...");
+                Vector<Movie> vectorAvg = new Vector<>(manager.getAllTimeTopRatedMovies(loginUser));
+                vectorAvg.setSize(30);
+
+                Platform.runLater(() -> {
+                    lblTopRated.setText(text);
+                    listTopRated.getItems().addAll(vectorAvg);
+                });
+            } catch (IOException ex) {
+                Logger.getLogger(MovieRecViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        t2.setDaemon(true);
+        t2.start();
+    }
+
+    @FXML
+    private void writeSeach(InputMethodEvent event) {
     }
 
 }

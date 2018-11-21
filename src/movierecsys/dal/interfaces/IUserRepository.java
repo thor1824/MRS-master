@@ -11,7 +11,7 @@ import movierecsys.be.User;
 
 /**
  *
- * @author thor1
+ * @author Thorbjørn Schultz Damkjær
  */
 public interface IUserRepository {
 

@@ -21,7 +21,7 @@ import movierecsys.dal.ServerConnect;
 
 /**
  *
- * @author thor1
+ * @author Thorbjørn Schultz Damkjær
  */
 public class UserDBDAO implements IUserRepository {
 

@@ -20,7 +20,7 @@ import movierecsys.be.User;
 
 /**
  *
- * @author pgn
+ * @author Thorbjørn Schultz Damkjær
  */
 public class Mitigator {
 
@@ -45,6 +45,7 @@ public class Mitigator {
 
         try (Connection con = sc.getConnection()) {
             Statement statement = con.createStatement();
+            statement.execute("DELETE FROM [User]");
 
             int counter = 0;
             for (User user : users) {
@@ -78,6 +79,7 @@ public class Mitigator {
         
         try (Connection con = sc.getConnection()) {
             Statement statement = con.createStatement();
+            statement.execute("DELETE FROM Rating");
 
             int counter = 0;
             for (Rating rating : allRatings) {
@@ -109,6 +111,7 @@ public class Mitigator {
 
         try (Connection con = sc.getConnection()) {
             Statement statement = con.createStatement();
+            statement.execute("DELETE FROM Movie");
 
             for (Movie movie : movies) {
                 String sql = "INSERT INTO Movie (MovieID,Titel,Year) VALUES("

@@ -22,7 +22,7 @@ import movierecsys.be.Movie;
 
 /**
  *
- * @author thor1
+ * @author Thorbjørn Schultz Damkjær
  */
 public class MovieDBDAO implements IMovieRepository {
     RatingDBDAO ratingsDBDAO = new RatingDBDAO();

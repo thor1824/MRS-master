@@ -7,7 +7,6 @@ package movierecsys.dal.File;
 
 import movierecsys.dal.interfaces.IRatingRepository;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -21,7 +20,7 @@ import movierecsys.be.User;
 
 /**
  *
- * @author pgn
+ * @author Thorbjørn Schultz Damkjær
  */
 public class RatingDAO implements IRatingRepository {
 
@@ -45,6 +44,7 @@ public class RatingDAO implements IRatingRepository {
             raf.writeInt(rating.getMovie());
             raf.writeInt(rating.getUser());
             raf.writeInt(rating.getRating());
+            raf.close();
             return rating;
         } catch (Exception ex) {
             throw new IllegalArgumentException("Rating not found in file");
@@ -91,6 +91,7 @@ public class RatingDAO implements IRatingRepository {
                     }
                 }
             }
+            raf.close();
             return false;
         } catch (Exception ex) {
             throw new IllegalArgumentException("Rating not found in file");
@@ -143,6 +144,7 @@ public class RatingDAO implements IRatingRepository {
                     }
                 }
             }
+            raf.close();
         } catch (Exception ex) {
             throw new IllegalArgumentException("Rating not found in file");
         }
@@ -171,7 +173,7 @@ public class RatingDAO implements IRatingRepository {
             }
 
         }
-
+        
         Collections.sort(allRatings, (Rating o1, Rating o2)
                 -> {
             int movieCompare = Integer.compare(o1.getMovie(), o2.getMovie());
@@ -180,8 +182,6 @@ public class RatingDAO implements IRatingRepository {
 
         return allRatings;
     }
-    
-    
 
     /**
      * Get all ratings from a specific user.
@@ -190,7 +190,10 @@ public class RatingDAO implements IRatingRepository {
      * @return The list of ratings.
      * @throws java.io.IOException
      */
-    public List<Rating> getRatings(User user, List<Rating> ratings) throws IOException {
+    
+    @Override
+    public List<Rating> getRatings(User user) throws IOException {
+        List<Rating> ratings= getAllRatings();
         List<Rating> ratingsOfUser = new ArrayList<>();
         for (Rating rating : ratings) {
             if (rating.getUser() == user.getId()) {
@@ -198,11 +201,6 @@ public class RatingDAO implements IRatingRepository {
             }
         }
         return ratingsOfUser;
-    }
-
-    @Override
-    public List<Rating> getRatings(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

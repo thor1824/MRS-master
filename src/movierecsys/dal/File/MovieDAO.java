@@ -21,11 +21,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import movierecsys.be.Movie;
-import movierecsys.be.Rating;
 
 /**
  *
- * @author pgn
+ * @author Thorbjørn Schultz Damkjær
  */
 public class MovieDAO implements IMovieRepository {
 

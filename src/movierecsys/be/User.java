@@ -7,7 +7,7 @@ package movierecsys.be;
 
 /**
  *
- * @author pgn
+ * @author Thorbjørn Schultz Damkjær
  */
 public class User {
 

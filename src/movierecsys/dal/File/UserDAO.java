@@ -26,7 +26,7 @@ import movierecsys.be.User;
 
 /**
  *
- * @author pgn
+ * @author Thorbjørn Schultz Damkjær
  */
 public class UserDAO implements IUserRepository {
 
@@ -57,6 +57,7 @@ public class UserDAO implements IUserRepository {
                     //Do nothing
                 }
             }
+            reader.close();
         }
         return allUsers;
     }
@@ -93,6 +94,7 @@ public class UserDAO implements IUserRepository {
                 StandardOpenOption.APPEND, StandardOpenOption.WRITE)) {
             id = getNextAvailableUserID();
             bw.write(id + "," + name);
+            bw.close();
         }
         return new User(id, name);
     }
@@ -137,8 +139,8 @@ public class UserDAO implements IUserRepository {
      */
     @Override
     public User getUser(int id) throws IOException {
-
-        for (User user : getAllUsers()) {
+        List<User> users = getAllUsers();
+        for (User user : users) {
             if (user.getId() == id) {
                 return user;
             }
@@ -165,6 +167,7 @@ public class UserDAO implements IUserRepository {
                 bw.write(theUser.getId() + "," + theUser.getName());
                 bw.newLine();
             }
+            bw.close();
         }
         Files.copy(tmp.toPath(), new File(USER_SOURCE).toPath(), StandardCopyOption.REPLACE_EXISTING);
 

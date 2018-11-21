@@ -11,7 +11,7 @@ import java.util.Vector;
 
 /**
  *
- * @author pgn
+ * @author Thorbjørn Schultz Damkjær
  */
 public class Movie {
 
@@ -80,7 +80,7 @@ public class Movie {
 
     @Override
     public String toString() {
-        return id + "," + title + "," + year;
+        return year +"      " +title;
     }
 
 }

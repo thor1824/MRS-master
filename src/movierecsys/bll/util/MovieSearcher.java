@@ -10,11 +10,11 @@ import movierecsys.be.Movie;
 
 /**
  *
- * @author pgn
+ * @author Thorbjørn Schultz Damkjær
  */
 public class MovieSearcher
 {
-    public List<Movie> search(List<Movie> searchBase, String query)
+    public List<Movie> search(String query)
     {
         //TODO Movie search
         return null;
