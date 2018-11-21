@@ -37,7 +37,7 @@ public class UserDBDAO implements IUserRepository {
             Statement statement = con.createStatement();
             int id = 0;
             User user = new User(id, name);
-            statement.executeQuery(
+            statement.execute(
                     "INSERT INTO User (UserID, Name) "
                     + "VALUES (" + id + ", " + name + ")"
                     + " WHERE UserID >" + id
@@ -58,7 +58,7 @@ public class UserDBDAO implements IUserRepository {
     public void deleteUser(User user) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            statement.execute("DELETE FROM User "
+            statement.execute("DELETE FROM [User] "
                     + "WHERE UserID = " + user.getId()
             );
 
@@ -74,7 +74,7 @@ public class UserDBDAO implements IUserRepository {
         List<User> users = new ArrayList<>();
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM User");
+            ResultSet rs = statement.executeQuery("SELECT * FROM [User]");
 
             while (rs.next()) {
                 int id = rs.getInt("UserID");
@@ -93,9 +93,10 @@ public class UserDBDAO implements IUserRepository {
     public User getUser(int id) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM User "
+            ResultSet rs = statement.executeQuery("SELECT * FROM [User] "
                     + "WHERE UserID = " + id
             );
+            rs.next();
             String name = rs.getNString("Name");
             User user = new User(id, name);
 
@@ -114,7 +115,7 @@ public class UserDBDAO implements IUserRepository {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
 
-            statement.execute("UPDATE User SET Name = " + user.getName()
+            statement.execute("UPDATE [User] SET Name = '" + user.getName() + "'"
                     + " WHERE UserID = " + user.getId()
             );
 
