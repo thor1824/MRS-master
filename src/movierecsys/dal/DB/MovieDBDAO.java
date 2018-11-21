@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import movierecsys.be.Movie;
-import movierecsys.be.Rating;
 
 /**
  *
  * @author thor1
  */
 public class MovieDBDAO implements IMovieRepository {
+    RatingDBDAO ratingsDBDAO = new RatingDBDAO();
 
     private static ServerConnect server;
 
@@ -37,13 +37,12 @@ public class MovieDBDAO implements IMovieRepository {
     public Movie createMovie(int releaseYear, String title) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            int id = 0;
+            int id = getNextId();
             Movie movie = new Movie(id, releaseYear, title);
-            statement.executeQuery(
+            statement.execute(
                     "INSERT INTO Movie (MovieID, Titel, Year) "
-                    + "VALUES (" + id + ", " + title + ", " + releaseYear + ") "
-                    + "WHERE MovieID >" + id
-                    + "AND MovieID <" + id
+                    + "VALUES (" + id + ",' " + title + "', " + releaseYear + ") "
+                   
             );
 
             return movie;
@@ -55,6 +54,14 @@ public class MovieDBDAO implements IMovieRepository {
         }
         return null;
     }
+    
+    private int getNextId() throws IOException
+    {
+        List<Movie> allMovies = getAllMovies();
+        int maxId = allMovies.get(allMovies.size() -1).getId();
+        return maxId +1;
+        
+    }
 
     @Override
     public void deleteMovie(Movie movie) throws FileNotFoundException, IOException {
@@ -62,9 +69,9 @@ public class MovieDBDAO implements IMovieRepository {
             Statement statement = con.createStatement();
             statement.execute("DELETE FROM Movie "
                     + "WHERE MovieID =" + movie.getId());
+            
 
-        } catch (SQLServerException ex) {
-            Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
+        
         } catch (SQLException ex) {
             Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -89,6 +96,7 @@ public class MovieDBDAO implements IMovieRepository {
         } catch (SQLException ex) {
 
         }
+        
         return movies;
     }
 
@@ -99,17 +107,19 @@ public class MovieDBDAO implements IMovieRepository {
             ResultSet rs = statement.executeQuery("SELECT * FROM Movie "
                     + "WHERE MovieID =" + id
             );
+            rs.next();
             int year = rs.getInt("Year");
+            
             String titel = rs.getString("Titel");
             Movie movie = new Movie(id, year, titel);
-
+            System.out.println(movie);
             return movie;
 
-        } catch (SQLServerException ex) {
-            Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
+        
         } catch (SQLException ex) {
             Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         return null;
     }
 
@@ -117,13 +127,12 @@ public class MovieDBDAO implements IMovieRepository {
     public void updateMovie(Movie movie) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
-            statement.execute("UPDATE Movie SET Titel = " + movie.getTitle()
-                    + ", Year = " + movie.getYear()
+            statement.execute("UPDATE Movie SET Titel = '" + movie.getTitle()
+                    + "', Year = " + movie.getYear()
                     + " WHERE MovieID = " + movie.getId()
             );
 
-        } catch (SQLServerException ex) {
-            Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
+      
         } catch (SQLException ex) {
             Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
