@@ -15,10 +15,10 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
@@ -60,6 +60,8 @@ public class MovieRecViewController implements Initializable {
     
     private MovieModel manager;
     private User loginUser;
+    @FXML
+    private ComboBox<User> dropUsers;
     
 
     /**
@@ -85,7 +87,6 @@ public class MovieRecViewController implements Initializable {
         updateHighestAvg();
     }
 
-    @FXML
     private void btnSeach(ActionEvent event) {
         listSeach.getItems().clear();
         listSeach.getItems().addAll(manager.searchMovies(txtSeach.getText().toLowerCase()));
@@ -215,9 +216,12 @@ public class MovieRecViewController implements Initializable {
         t2.setDaemon(true);
         t2.start();
     }
-
+    
     @FXML
-    private void writeSeach(InputMethodEvent event) {
+    private void btnChangeUser(ActionEvent event) {
+        loginUser = dropUsers.getSelectionModel().getSelectedItem();
+        updateHighestAvg();
+        updateRecommended();
     }
 
 }

@@ -57,7 +57,7 @@ public class MovieDAO implements IMovieRepository {
 
         return allMovies;
     }
-    
+
     /**
      * Reads a movie from a , s
      *
@@ -67,11 +67,18 @@ public class MovieDAO implements IMovieRepository {
      */
     private Movie stringArrayToMovie(String t) {
         String[] arrMovie = t.split(",");
-
-        int id = Integer.parseInt(arrMovie[0]);
-        int year = Integer.parseInt(arrMovie[1]);
-        String title = arrMovie[2];
-
+        int id;
+        int year;
+        String title;
+        if (arrMovie.length > 3) {
+            id = Integer.parseInt(arrMovie[0]);
+            year = Integer.parseInt(arrMovie[1]);
+            title = arrMovie[2] +"," + arrMovie[3];
+        } else {
+            id = Integer.parseInt(arrMovie[0]);
+            year = Integer.parseInt(arrMovie[1]);
+            title = arrMovie[2];
+        }
         Movie mov = new Movie(id, year, title);
         return mov;
     }

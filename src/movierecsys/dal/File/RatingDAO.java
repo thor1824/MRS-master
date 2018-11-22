@@ -165,9 +165,14 @@ public class RatingDAO implements IRatingRepository {
             int movieId = ByteBuffer.wrap(all, i, Integer.BYTES).order(ByteOrder.BIG_ENDIAN).getInt();
             int userId = ByteBuffer.wrap(all, i + Integer.BYTES, Integer.BYTES).order(ByteOrder.BIG_ENDIAN).getInt();
             int rating = ByteBuffer.wrap(all, i + Integer.BYTES * 2, Integer.BYTES).order(ByteOrder.BIG_ENDIAN).getInt();
+            
             if (movieId != DELETEDVALUE) {
+                if (rating > 5 || rating < -5) {
+                 rating = 1;   
+                }
                 Rating r = new Rating(movieId, userId, rating);
                 allRatings.add(r);
+                
             } else {
                 System.out.println("found deleted file");
             }

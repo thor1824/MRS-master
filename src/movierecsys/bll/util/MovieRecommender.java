@@ -35,13 +35,14 @@ public class MovieRecommender {
     public List<Movie> highAverageRecommendations(List<Rating> ratings, List<Rating> userRatings) throws IOException {
         List<Movie> topRatedMovies = new ArrayList<>();
         List<Rating> movieRatings = new ArrayList<>();
-
+        
+        
+        Collections.sort(ratings, (Rating r1, Rating r2) -> Double.compare(r2.getMovie(), r1.getMovie()));
         Rating priviuseRating = ratings.get(0);
-
         for (Rating rating : ratings) {
             if (rating.getMovie() != priviuseRating.getMovie()) {
                 Movie movie = movieDAO.getMovie(priviuseRating.getMovie());
-                movie.addToRatings(movieRatings);
+                setAvgRating(movieRatings, movie);
                 topRatedMovies.add(movie);
                 movieRatings = new ArrayList<>();
                 movieRatings.add(rating);
@@ -52,9 +53,20 @@ public class MovieRecommender {
             priviuseRating = rating;
         }
 
-        Collections.sort(topRatedMovies, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating(), m1.getAvgRating()));
-
+        Collections.sort(topRatedMovies, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating2(), m1.getAvgRating2()));
+        for (Movie topRatedMovy : topRatedMovies) {
+            System.out.println(topRatedMovy.getAvgRating2()+ "    " + topRatedMovy.getTitle());
+        }
+        
         return topRatedMovies;
+    }
+
+    private void setAvgRating(List<Rating> movieRatings, Movie movie) {
+        for (Rating movieRating : movieRatings) {
+            movie.setRating(movie.getRating() + movieRating.getRating());
+            movie.countUp();
+            
+        }
     }
 
     /**

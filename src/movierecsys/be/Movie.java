@@ -17,8 +17,8 @@ public class Movie {
 
     private final int id;
     private String title;
-    private int year, recommendationValue;
-    private double avgRating;
+    private int year, recommendationValue, counter;
+    private double avgRating, rating;
     private List<Rating> ratings;
 
     public Movie(int id, int year, String title) {
@@ -27,19 +27,33 @@ public class Movie {
         this.year = year;
         recommendationValue = 0;
         ratings = new ArrayList<>();
+        counter = 0;
+        rating = 0;
 
     }
 
     public double getAvgRating() {
         if (ratings.size() > 0) {
-            int avg = 0;
+            double avg = 0;
             for (Rating rating : ratings) {
                 avg += rating.getRating();
             }
-            return avg / ratings.size();
+            return avg / ratings.size() - 1;
 
         }
         return 0;
+    }
+
+    public double getAvgRating2() {
+        return rating / counter;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     public int getRecommendationValue() {
@@ -74,13 +88,17 @@ public class Movie {
         return id + "," + year + "," + title;
     }
 
+    public void countUp() {
+        counter++;
+    }
+
     public void addToRatings(List<Rating> addetions) {
         ratings.addAll(addetions);
     }
 
     @Override
     public String toString() {
-        return year +"      " +title;
+        return year + "      " + title;
     }
 
 }

@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="772.0" prefWidth="1149.0" style="-fx-background-color: lightgray;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="movierecsys.gui.view.MovieRecViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="772.0" prefWidth="1149.0" style="-fx-background-color: lightgray;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="movierecsys.gui.view.MovieRecViewController">
    <children>
       <VBox layoutX="16.0" layoutY="14.0" prefHeight="757.0" prefWidth="1118.0">
          <children>
@@ -24,12 +24,12 @@
                      </HBox.margin>
                   </Label>
                   <Label fx:id="lblName" prefHeight="57.0" prefWidth="87.0" text="Name" />
-                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="change">
+                  <Button mnemonicParsing="false" onAction="#btnChangeUser" prefHeight="25.0" prefWidth="75.0" text="change">
                      <HBox.margin>
                         <Insets left="730.0" top="15.0" />
                      </HBox.margin>
                   </Button>
-                  <ComboBox prefWidth="150.0" promptText="Users">
+                  <ComboBox fx:id="dropUsers" prefWidth="150.0" promptText="Users">
                      <HBox.margin>
                         <Insets left="10.0" top="15.0" />
                      </HBox.margin>
@@ -49,11 +49,6 @@
                                           <Insets left="10.0" right="7.0" top="10.0" />
                                        </HBox.margin>
                                     </TextField>
-                                    <Button mnemonicParsing="false" onAction="#btnSeach" prefHeight="30.0" prefWidth="60.0" text="Seach">
-                                       <HBox.margin>
-                                          <Insets left="10.0" top="10.0" />
-                                       </HBox.margin>
-                                    </Button>
                                  </children>
                               </HBox>
                               <ListView fx:id="listSeach" prefHeight="609.0" prefWidth="1116.0" style="-fx-background-color: lightgray; -fx-border-color: black;" />

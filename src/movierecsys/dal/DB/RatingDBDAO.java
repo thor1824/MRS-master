@@ -92,11 +92,18 @@ public class RatingDBDAO implements IRatingRepository {
     public boolean updateRating(Rating rating) throws IOException {
         try (Connection con = server.getConnection()) {
             Statement statement = con.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM Rating WHERE MovieID = " + rating.getMovie()
+                    + " AND UserID =" + rating.getUser()
+            );
 
-            statement.execute("UPDATE Movie SET Rating = " + rating.getRating()
-                    + " WHERE MovieID = " + rating.getMovie()
-                    + " AND UserID =" + rating.getUser());
-            return true;
+            if (!rs.first()) {
+                return false;
+            } else {
+                statement.execute("UPDATE Movie SET Rating = " + rating.getRating()
+                        + " WHERE MovieID = " + rating.getMovie()
+                        + " AND UserID =" + rating.getUser());
+                return true;
+            }
         } catch (SQLServerException ex) {
             Logger.getLogger(MovieDBDAO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {

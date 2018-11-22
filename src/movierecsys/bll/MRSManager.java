@@ -8,7 +8,6 @@ package movierecsys.bll;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.application.Platform;
 import movierecsys.be.Movie;
 import movierecsys.be.Rating;
 import movierecsys.be.User;
