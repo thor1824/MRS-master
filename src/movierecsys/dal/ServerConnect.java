@@ -15,10 +15,10 @@ import java.sql.Connection;
  */
 public class ServerConnect {
 
-    private static final String serverName = "10.176.111.31";
+    private static final String serverName = "10.176.111.x";
     private static final String databaseName = "movie";
-    private static final String userName = "CS2018A_32";
-    private static final String userPassword = "CS2018A_32";
+    private static final String userName = "CS2018A_x";
+    private static final String userPassword = "CS2018A_x";
     private final SQLServerDataSource ds;
 
     public ServerConnect() {
