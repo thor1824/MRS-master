@@ -56,13 +56,11 @@ public class MovieRecViewController implements Initializable {
     @FXML
     private TextField txtUpdateMovieID, txtUpdateMovieTitel, txtUpdateMovieYear, txtSeach,
             txtDeleteMovieID, txtDeleteMovieTitel1, txtDeleteMovieYear, txtRateMovieID, txtAddMovieTitel, txtAddMovieYear, txtCreateUser;
-    
-    
+
     private MovieModel manager;
     private User loginUser;
     @FXML
     private ComboBox<User> dropUsers;
-    
 
     /**
      * Initializes the controller class.
@@ -77,6 +75,7 @@ public class MovieRecViewController implements Initializable {
 
         loginUser = manager.getUserById(7);
         lblName.setText(loginUser.getName());
+        dropUsers.getItems().setAll(manager.getAllUsers());
 
         try {
             updateUserRating();
@@ -137,42 +136,48 @@ public class MovieRecViewController implements Initializable {
     private void rat1(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), -5);
         updateUserRating();
+        lblRated.setText("Rated");
     }
 
     @FXML
     private void rat2(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), -3);
         updateUserRating();
+        lblRated.setText("Rated");
     }
 
     @FXML
     private void rat3(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), 1);
         updateUserRating();
+        lblRated.setText("Rated");
     }
 
     @FXML
     private void rat4(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), 3);
         updateUserRating();
+        lblRated.setText("Rated");
     }
 
     @FXML
     private void rat5(ActionEvent event) throws IOException {
         manager.rateMovie(Integer.parseInt(txtRateMovieID.getText()), loginUser.getId(), 5);
         updateUserRating();
+        lblRated.setText("Rated");
     }
 
     private void updateUserRating() throws IOException {
         listRatings.getItems().clear();
         listRatings.getItems().addAll(manager.getRatedMovies(loginUser));
-
+        lblRated.setText("Rated");
     }
 
     @FXML
     private void writeSeach(KeyEvent event) {
         listSeach.getItems().clear();
         listSeach.getItems().addAll(manager.searchMovies(txtSeach.getText().toLowerCase()));
+        lblRated.setText("Rated");
     }
 
     private void updateRecommended() {
@@ -180,11 +185,10 @@ public class MovieRecViewController implements Initializable {
 
             try {
                 String text = lblRecomendation.getText();
-                lblRecomendation.setText(text + "  Loading...");
                 Vector<Movie> vectorRecc = new Vector<>(manager.getMovieReccomendations(loginUser));
                 vectorRecc.setSize(30);
-
                 Platform.runLater(() -> {
+                    listReccomended.getItems().clear();
                     lblRecomendation.setText(text);
                     listReccomended.getItems().addAll(vectorRecc);
                 });
@@ -201,11 +205,10 @@ public class MovieRecViewController implements Initializable {
         Thread t2 = new Thread(() -> {
             try {
                 String text = lblTopRated.getText();
-                lblTopRated.setText(text + "  Loading...");
                 Vector<Movie> vectorAvg = new Vector<>(manager.getAllTimeTopRatedMovies(loginUser));
                 vectorAvg.setSize(30);
-
                 Platform.runLater(() -> {
+                    
                     lblTopRated.setText(text);
                     listTopRated.getItems().addAll(vectorAvg);
                 });
@@ -216,11 +219,14 @@ public class MovieRecViewController implements Initializable {
         t2.setDaemon(true);
         t2.start();
     }
-    
+
     @FXML
-    private void btnChangeUser(ActionEvent event) {
+    private void btnChangeUser(ActionEvent event) throws IOException {
+        
         loginUser = dropUsers.getSelectionModel().getSelectedItem();
-        updateHighestAvg();
+        lblName.setText(loginUser.getName());
+        listReccomended.getItems().clear();
+        updateUserRating();
         updateRecommended();
     }
 

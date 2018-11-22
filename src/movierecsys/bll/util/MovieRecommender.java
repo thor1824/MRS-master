@@ -54,18 +54,12 @@ public class MovieRecommender {
         }
 
         Collections.sort(topRatedMovies, (Movie m1, Movie m2) -> Double.compare(m2.getAvgRating2(), m1.getAvgRating2()));
-        for (Movie topRatedMovy : topRatedMovies) {
-            System.out.println(topRatedMovy.getAvgRating2()+ "    " + topRatedMovy.getTitle());
-        }
-        
         return topRatedMovies;
     }
 
     private void setAvgRating(List<Rating> movieRatings, Movie movie) {
         for (Rating movieRating : movieRatings) {
-            movie.setRating(movie.getRating() + movieRating.getRating());
-            movie.countUp();
-            
+            movie.addtoRating(movieRating.getRating());
         }
     }
 
@@ -81,12 +75,14 @@ public class MovieRecommender {
     public List<Movie> weightedRecommendations(List<Rating> ratingList, List<Rating> userRatings, User user) throws IOException {
         List<Movie> movies = movieDAO.getAllMovies();
         List<User> pairedUsers = userDAO.getAllUsers();
+        List<Movie> userMovies = movieListfromRatings(userRatings, movies);
         List<Movie> reccommendedMovies = new ArrayList<>();
         List<Rating> pairedUserRatings = new ArrayList<>();
         List<Rating> pairedTemp;
         List<Rating> userTempRatings;
         pairedUsers.remove(user);
         ratingList.removeAll(userRatings);
+        
         Collections.sort(ratingList, (Rating r1, Rating r2) -> Double.compare(r2.getUser(), r1.getUser()));
         Rating priviuseRating = new Rating(0, 0, 0);
 
@@ -100,6 +96,7 @@ public class MovieRecommender {
                 if (!pairedTemp.isEmpty()) {
                     User pairedUser = getUserFromList(priviuseRating.getUser(), pairedUsers);
                     List<Movie> ratedMovies = movieListfromRatings(pairedUserRatings, movies);
+                    
                     int similarity = calculateSimilarity(pairedTemp, userTempRatings);
                     pairedUser.setSimilarity(similarity);
                     reccommendedMovies.removeAll(ratedMovies);
@@ -115,7 +112,7 @@ public class MovieRecommender {
 
             priviuseRating = rating;
         }
-
+        reccommendedMovies.removeAll(userMovies);
         Collections.sort(reccommendedMovies, (Movie m1, Movie m2) -> Integer.compare(m2.getRecommendationValue(), m1.getRecommendationValue()));
         System.out.println("done");
         return reccommendedMovies;

@@ -90,10 +90,12 @@ public class MovieModel {
     public List<Movie> getMovieReccomendations(User user) throws IOException {
         return logiclayer.getMovieReccomendations(user);
     }
-    
-     public List<Movie> searchMovies(String query)
-     {
-         return logiclayer.searchMovies(movies, query);
-     }
 
+    public List<Movie> searchMovies(String query) {
+        return logiclayer.searchMovies(movies, query);
+    }
+    
+    public List<User> getAllUsers(){
+        return logiclayer.getAllUsers();
+    }
 }

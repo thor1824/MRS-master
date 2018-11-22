@@ -52,8 +52,9 @@ public class Movie {
         return rating;
     }
 
-    public void setRating(double rating) {
-        this.rating = rating;
+    public void addtoRating(double rating) {
+        addToNumberOfRating();
+        this.rating = this.rating + rating;
     }
 
     public int getRecommendationValue() {
@@ -88,7 +89,7 @@ public class Movie {
         return id + "," + year + "," + title;
     }
 
-    public void countUp() {
+    private void addToNumberOfRating() {
         counter++;
     }
 
