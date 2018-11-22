@@ -34,3 +34,4 @@ nbproject/private/private.xml
 nbproject/private/configs/Run_in_Browser.properties
 nbproject/private/private.properties
 nbproject/private/private.xml
+src/movierecsys/dal/ServerConnect.java
