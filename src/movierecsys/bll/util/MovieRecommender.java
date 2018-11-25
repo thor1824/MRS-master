@@ -35,8 +35,7 @@ public class MovieRecommender {
     public List<Movie> highAverageRecommendations(List<Rating> ratings, List<Rating> userRatings) throws IOException {
         List<Movie> topRatedMovies = new ArrayList<>();
         List<Rating> movieRatings = new ArrayList<>();
-        
-        
+
         Collections.sort(ratings, (Rating r1, Rating r2) -> Double.compare(r2.getMovie(), r1.getMovie()));
         Rating priviuseRating = ratings.get(0);
         for (Rating rating : ratings) {
@@ -73,49 +72,52 @@ public class MovieRecommender {
      * descending order.
      */
     public List<Movie> weightedRecommendations(List<Rating> ratingList, List<Rating> userRatings, User user) throws IOException {
-        List<Movie> movies = movieDAO.getAllMovies();
-        List<User> pairedUsers = userDAO.getAllUsers();
-        List<Movie> userMovies = movieListfromRatings(userRatings, movies);
-        List<Movie> reccommendedMovies = new ArrayList<>();
-        List<Rating> pairedUserRatings = new ArrayList<>();
-        List<Rating> pairedTemp;
-        List<Rating> userTempRatings;
-        pairedUsers.remove(user);
-        ratingList.removeAll(userRatings);
+        List<Movie> movies = movieDAO.getAllMovies(), 
+                userMovies = getMovieFromList(userRatings, movies), 
+                recommendedMovies = new ArrayList<>();
         
+        List<Rating> pairedTempRating, 
+                userTempRatings, 
+                pairedUserRatings = new ArrayList<>();
+        
+        ratingList.removeAll(userRatings);
+
         Collections.sort(ratingList, (Rating r1, Rating r2) -> Double.compare(r2.getUser(), r1.getUser()));
-        Rating priviuseRating = new Rating(0, 0, 0);
+
+        Rating priviuseRating = ratingList.get(0);
 
         for (Rating rating : ratingList) {
 
-            if (rating.getUser() != priviuseRating.getUser()) {
-                pairedTemp = new ArrayList();
-                userTempRatings = new ArrayList();
-                removeNonSimilarMovies(userRatings, pairedUserRatings, pairedTemp, userTempRatings);
+            if (rating.getUser() == priviuseRating.getUser()) {
 
-                if (!pairedTemp.isEmpty()) {
-                    User pairedUser = getUserFromList(priviuseRating.getUser(), pairedUsers);
-                    List<Movie> ratedMovies = movieListfromRatings(pairedUserRatings, movies);
+                pairedUserRatings.add(rating); //adds to list that only has the same user
+
+            } else {
+                pairedTempRating = new ArrayList();
+                userTempRatings = new ArrayList();
+
+                removeNonSimilarMovies(userRatings, pairedUserRatings, pairedTempRating, userTempRatings);
+
+                if (!pairedTempRating.isEmpty()) { // throws out the list if it doen't contain any of the same rated movie 
                     
-                    int similarity = calculateSimilarity(pairedTemp, userTempRatings);
-                    pairedUser.setSimilarity(similarity);
-                    reccommendedMovies.removeAll(ratedMovies);
-                    setRecommendationsValue(pairedUserRatings, ratedMovies, similarity, reccommendedMovies);
+                    List<Movie> pairRatedMovies = getMovieFromList(pairedUserRatings, movies);
+
+                    int similarity = calculateSimilarity(pairedTempRating, userTempRatings);
+
+                    recommendedMovies.removeAll(pairRatedMovies); //removes the movies so we doesn't get dublicates
+                    
+                    setRecommendationsValue(pairedUserRatings, pairRatedMovies, similarity, recommendedMovies);
                 }
 
                 pairedUserRatings = new ArrayList<>();
-                pairedUserRatings.add(rating);
-
-            } else {
                 pairedUserRatings.add(rating);
             }
 
             priviuseRating = rating;
         }
-        reccommendedMovies.removeAll(userMovies);
-        Collections.sort(reccommendedMovies, (Movie m1, Movie m2) -> Integer.compare(m2.getRecommendationValue(), m1.getRecommendationValue()));
-        System.out.println("done");
-        return reccommendedMovies;
+        recommendedMovies.removeAll(userMovies);
+        Collections.sort(recommendedMovies, (Movie m1, Movie m2) -> Integer.compare(m2.getRecommendationValue(), m1.getRecommendationValue()));
+        return recommendedMovies;
     }
 
     /**
@@ -147,7 +149,7 @@ public class MovieRecommender {
      * @return
      * @throws IOException
      */
-    private List<Movie> movieListfromRatings(List<Rating> inputRating, List<Movie> listOfAllMovies) throws IOException {
+    private List<Movie> getMovieFromList(List<Rating> inputRating, List<Movie> listOfAllMovies) throws IOException {
 
         List<Movie> outputMovieList = new ArrayList<>();
         int i = 0;
@@ -169,14 +171,14 @@ public class MovieRecommender {
      * @param pairedUserRatings
      * @param ratedMovies
      * @param similarity
-     * @param reccommendedMovies
+     * @param recommendedMovies
      */
-    private void setRecommendationsValue(List<Rating> pairedUserRatings, List<Movie> ratedMovies, int similarity, List<Movie> reccommendedMovies) {
+    private void setRecommendationsValue(List<Rating> pairedUserRatings, List<Movie> ratedMovies, int similarity, List<Movie> recommendedMovies) {
         int i = 0;
-        for (Rating recommedMovieRatings : pairedUserRatings) {
-            if (recommedMovieRatings.getMovie() == ratedMovies.get(i).getId()) {
-                ratedMovies.get(i).setRecommendationValue(ratedMovies.get(i).getRecommendationValue() + similarity * recommedMovieRatings.getRating());
-                reccommendedMovies.add(0, ratedMovies.get(i));
+        for (Rating rating : pairedUserRatings) {
+            if (rating.getMovie() == ratedMovies.get(i).getId()) {
+                ratedMovies.get(i).addToRecommendationValue(similarity * rating.getRating());
+                recommendedMovies.add(ratedMovies.get(i));
 
             } else {
                 System.out.println("Somthing went wrong when setting RecommendedValue");
@@ -213,15 +215,5 @@ public class MovieRecommender {
             }
         }
         return similarity;
-    }
-
-    public User getUserFromList(int id, List<User> users) throws IOException {
-        for (User user : users) {
-            if (user.getId() == id) {
-                return user;
-            }
-
-        }
-        return null;
     }
 }

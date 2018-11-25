@@ -13,7 +13,6 @@ public class User {
 
     private final int id;
     private String name;
-    private int similarity;
 
     /**
      * Constructs a new user object.
@@ -24,15 +23,7 @@ public class User {
     public User(int id, String name) {
         this.id = id;
         this.name = name;
-        similarity = 0;
-    }
 
-    public int getSimilarity() {
-        return similarity;
-    }
-
-    public void setSimilarity(int similarity) {
-        this.similarity = similarity;
     }
 
     /**
